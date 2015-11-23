@@ -71,27 +71,27 @@ public:
 
 	// VOLUME DATA
 
-	const Voxel&			voxel(const int i) const;
-	const Voxel&			voxel(const int x, const int y, const int z) const;
-	const Voxel*			voxels() const;
+	const Voxel& voxel(const int i) const;
+	const Voxel& voxel(const int x, const int y, const int z) const;
+	const Voxel* voxels() const;
 
-	const int				width() const;
-	const int				height() const;
-	const int				depth() const;
+	const int width() const;
+	const int height() const;
+	const int depth() const;
 
-	const int				size() const;
+	const int size() const;
 
-	bool					loadFromFile(QString filename, QProgressBar* progressBar);
+	bool loadFromFile(QString filename, QProgressBar* progressBar);
 
 
 private:
 
-	std::vector<Voxel>		m_Voxels;
+	std::vector<Voxel> m_Voxels;
 
-	int						m_Width;
-	int						m_Height;
-	int						m_Depth;
+	int m_Width;
+	int m_Height;
+	int m_Depth;
 
-	int						m_Size;
+	int m_Size;
 
 };

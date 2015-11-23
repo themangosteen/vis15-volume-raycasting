@@ -24,38 +24,38 @@ public:
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
-	
+
 protected slots :
 
-	void								 openFileAction();
-	void								 closeAction();
+	void openFileAction();
+	void closeAction();
 
 
 private:
 
 	// USER INTERFACE ELEMENTS
 
-	Ui_MainWindow						*m_Ui;
+	Ui_MainWindow *m_Ui;
 
 
 	// DATA
 
 	enum DataType
 	{
-		VOLUME					= 0,
-		VECTORFIELD				= 1,
-		MULTIVARIATE			= 2
+		VOLUME			= 0,
+		VECTORFIELD		= 1,
+		MULTIVARIATE	= 2
 	};
 
 	struct FileType
 	{
-		QString			filename;
-		DataType		type;
-	}									 m_FileType;
+		QString filename;
+		DataType type;
+	} m_FileType;
 
-	Volume								*m_Volume;						// for Volume-Rendering
-	VectorField							*m_VectorField;					// for Flow-Visualisation
-	MultiSet							*m_MultiSet;					// for Multivariate Data
+	Volume *m_Volume; // for Volume-Rendering
+	VectorField *m_VectorField; // for Flow-Visualisation
+	MultiSet *m_MultiSet; // for Multivariate Data
 
 };
 
