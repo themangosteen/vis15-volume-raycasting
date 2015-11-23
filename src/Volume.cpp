@@ -124,7 +124,7 @@ const Voxel Voxel::operator/(const float &value) const
 //-------------------------------------------------------------------------------------------------
 
 Volume::Volume()
-	: m_Width(1), m_Height(1), m_Depth(1), m_Size(0), m_Voxels(1)
+	: m_Voxels(1), m_Width(1), m_Height(1), m_Depth(1), m_Size(0)
 {
 }
 
@@ -175,8 +175,7 @@ const int Volume::size() const
 bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 {
 	// load file
-	FILE *fp = NULL;
-	fopen_s(&fp, filename.toStdString().c_str(), "rb");
+	FILE *fp = fopen(filename.toStdString().c_str(), "rb");
 	if (!fp)
 	{
 		std::cerr << "+ Error loading file: " << filename.toStdString() << std::endl;
@@ -202,9 +201,9 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	// check dataset dimensions
 	if (
-			m_Width <= 0 || m_Width > 1000 ||
-			m_Height <= 0 || m_Height > 1000 ||
-			m_Depth <= 0 || m_Depth > 1000)
+		m_Width <= 0 || m_Width > 1000 ||
+		m_Height <= 0 || m_Height > 1000 ||
+		m_Depth <= 0 || m_Depth > 1000)
 	{
 		std::cerr << "+ Error loading file: " << filename.toStdString() << std::endl;
 		std::cerr << "Unvalid dimensions - probably loaded .dat flow file instead of .gri file?" << std::endl;
@@ -236,10 +235,11 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 		// data is converted to FLOAT values in an interval of [0.0 .. 1.0];
 		// uses 4095.0f to normalize the data, because only 12bit are used for the
 		// data values, and then 4095.0f is the maximum possible value
-		const float value = std::fmin(0.0f, float(vecData[i]) / 4095.0f);
+		const float value = fmin(0.0f, float(vecData[i]) / 4095.0f);
 		m_Voxels[i] = Voxel(value);
 		
 		progressBar->setValue(10 + i);
+
 	}
 
 	progressBar->setValue(0);

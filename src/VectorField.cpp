@@ -88,19 +88,19 @@ bool VectorField::loadFromFile(QString filename, QProgressBar* progressBar)
 		std::istringstream iss(line);
 		switch (index)
 		{
-		case 1:
-			iss >> uWidth;
-			break;
-		case 2:
-			iss >> uHeight;
-			break;
-		case 3:
-			iss >> uNum;
-			break;
-		case 4:
-			std::string path = filenameStr.substr(0, filenameStr.find_last_of("/") + 1);
-			datFile = path + line;
-			break;
+			case 1:
+				iss >> uWidth;
+				break;
+			case 2:
+				iss >> uHeight;
+				break;
+			case 3:
+				iss >> uNum;
+				break;
+			case 4:
+				std::string path = filenameStr.substr(0, filenameStr.find_last_of("/") + 1);
+				datFile = path + line;
+				break;
 		}
 		index++;
 	}
@@ -122,8 +122,7 @@ bool VectorField::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	// --- READ DATA --- //
 
-	FILE *fp = NULL;
-	fopen_s(&fp, datFile.c_str(), "rb");
+	FILE *fp = fopen(datFile.c_str(), "rb");
 	if (!fp)
 	{
 		std::cerr << "+ Error loading file: " << datFile << std::endl;

@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	m_Ui = new Ui_MainWindow();
 	m_Ui->setupUi(this);
+	m_Ui->progressBar->hide();
 
 	connect(m_Ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
 	connect(m_Ui->actionClose, SIGNAL(triggered()), this, SLOT(closeAction()));
@@ -39,6 +40,7 @@ void MainWindow::openFileAction()
 		bool success = false;
 
 		// progress bar and top label
+		m_Ui->progressBar->show();
 		m_Ui->progressBar->setEnabled(true);
 		m_Ui->labelTop->setText("Loading data ...");
 
@@ -72,6 +74,7 @@ void MainWindow::openFileAction()
 		}
 
 		m_Ui->progressBar->setEnabled(false);
+		m_Ui->progressBar->hide();
 
 		// status message
 		if (success)
