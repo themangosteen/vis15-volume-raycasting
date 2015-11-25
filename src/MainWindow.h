@@ -3,6 +3,7 @@
 #define MAINWINDOW_H
 
 #include "ui_MainWindow.h"
+#include "GLWidget.h"
 #include "Volume.h"
 #include "VectorField.h"
 #include "MultiSet.h"
@@ -36,6 +37,7 @@ private:
 	// USER INTERFACE ELEMENTS
 
 	Ui_MainWindow *m_Ui;
+	GLWidget *glWidget;
 
 
 	// DATA

@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(m_Ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
 	connect(m_Ui->actionClose, SIGNAL(triggered()), this, SLOT(closeAction()));
+
 }
 
 MainWindow::~MainWindow()

@@ -26,7 +26,6 @@ set(CMAKE_AUTOMOC ON)
 ### EXTERNAL LIBRARIES ###
 
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(Qt5Core)
 find_package(Qt5Gui)
@@ -45,6 +44,8 @@ set(SRC_CLASSES
     
     src/MainWindow.h
     src/MainWindow.cpp
+    src/GLWidget.h
+    src/GLWidget.cpp
     
     src/Vector.h
     src/Vector.cpp
@@ -60,9 +61,8 @@ set(SRC_CLASSES
 # relative path to shader files
 set(SRC_SHADERS
 
-    # nothing here yet
-    # src/shaders/example.vert
-    # src/shaders/example.frag
+    src/shaders/testshader.vert
+    src/shaders/testshader.frag
 
     )
 
@@ -77,13 +77,11 @@ add_executable(${PROJECT_NAME} ${SRC_CLASSES} ${SRC_SHADERS} ${UI_HEADERS})
 
 ### INCLUDE HEADER FILES ###
 include_directories(${OPENGL_INCLUDE_DIRS} 
-                    ${GLEW_INCLUDE_DIRS}
                     )
 
 ### LINK LIBRARIES ###
 target_link_libraries(${PROJECT_NAME}
                       ${OPENGL_LIBRARIES}
-                      ${GLEW_LIBRARY}
                       Qt5::Core
                       Qt5::Gui
                       Qt5::UiTools
