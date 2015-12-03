@@ -38,22 +38,6 @@ void GLWidget::initializeGL()
 	// get volume data
 	volumeData = mainWindow->m_Volume;
 
-	if (volumeData != nullptr) {
-
-		vertices.clear();
-
-		for (int i = 0; i < volumeData->width(); ++i) {
-			for (int j = 0; j < volumeData->height(); ++j) {
-				for (int k = 0; k < volumeData->depth(); ++k) {
-					vertices.push_back(i);
-					vertices.push_back(j);
-					vertices.push_back(k);
-					vertices.push_back(volumeData->voxel(i, j, k).getValue());
-				}
-			}
-		}
-	}
-
 	// generate vertex array object (vao).
 	// subsequent bindings related to vertex buffer data and shader variables
 	// are stored by the bound vao, so they can conveniently be reused later.
@@ -115,5 +99,46 @@ void GLWidget::paintGL()
 	shader->release();
 
 	// TODO
+}
+
+void GLWidget::dataLoaded()
+{
+	// get volume data
+	volumeData = mainWindow->m_Volume;
+
+	if (volumeData != nullptr) {
+
+		vertices.clear();
+
+		for (int i = 0; i < volumeData->width(); ++i) {
+			for (int j = 0; j < volumeData->height(); ++j) {
+				for (int k = 0; k < volumeData->depth(); ++k) {
+					vertices.push_back(i);
+					vertices.push_back(j);
+					vertices.push_back(k);
+					vertices.push_back(volumeData->voxel(i, j, k).getValue());
+				}
+			}
+		}
+	}
+
+	qWarning() << "data loaded" << vertices.size();
+
+	shader->bind();
+	vao.bind();
+
+	vbo.bind();
+	vbo.allocate(&vertices[0], vertices.size() * sizeof(float));
+
+	// enable shader attributes at given indices to supply vertex data to them
+	// the order / layout of the shader attribute are defined in the shader source file
+	int vertexDataAttribIndex   = shader->attributeLocation("vertexData");
+	shader->enableAttributeArray(vertexDataAttribIndex); // attribute to receive vertex data
+	shader->setAttributeBuffer(vertexDataAttribIndex, GL_FLOAT, 0, 4); // use 4 components (x,y,z, intensity) per vertex
+
+	// unbind buffers
+	vao.release();
+	vbo.release();
+	shader->release();
 }
 

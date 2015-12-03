@@ -28,7 +28,7 @@ public:
 	~MainWindow();
 
 signals:
-	void dataUpdated();
+	void dataLoaded();
 
 protected slots :
 

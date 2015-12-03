@@ -22,6 +22,9 @@ public:
 		mainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent());
 	}
 
+public slots:
+	void dataLoaded();
+
 protected:
 
 	void initializeGL();

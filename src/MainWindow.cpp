@@ -11,9 +11,13 @@ MainWindow::MainWindow(QWidget *parent)
 	m_Ui = new Ui_MainWindow();
 	m_Ui->setupUi(this);
 	m_Ui->progressBar->hide();
+	glWidget = m_Ui->glWidget;
 
 	connect(m_Ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
+	connect(this, &MainWindow::dataLoaded, glWidget, &GLWidget::dataLoaded);
+
 	connect(m_Ui->actionClose, SIGNAL(triggered()), this, SLOT(closeAction()));
+
 
 }
 
@@ -31,6 +35,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::openFileAction()
 {
+
 	QString filename = QFileDialog::getOpenFileName(this, "Data File", 0, tr("Data Files (*.dat *.gri *.csv)"));
 
 	if (!filename.isEmpty())
@@ -81,7 +86,10 @@ void MainWindow::openFileAction()
 		if (success)
 		{
 			QString type;
-			if (m_FileType.type == VOLUME) type = "VOLUME";
+			if (m_FileType.type == VOLUME) {
+				type = "VOLUME";
+				emit dataLoaded();
+			}
 			else if (m_FileType.type == VECTORFIELD) type = "VECTORFIELD";
 			else if (m_FileType.type == MULTIVARIATE) type = "MULTIVARIATE";
 			m_Ui->labelTop->setText("File LOADED [" + filename + "] - Type [" + type + "]");
