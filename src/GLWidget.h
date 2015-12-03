@@ -23,7 +23,8 @@ public:
 	}
 
 public slots:
-	void dataLoaded();
+	void dataLoaded(Volume *volumeData);
+	void setFoV(int angle); // angle in degree
 
 protected:
 

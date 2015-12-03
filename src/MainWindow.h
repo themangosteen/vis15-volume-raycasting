@@ -20,15 +20,13 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
-	friend class GLWidget; // let GLWidget access private members (saves a lot of writing but generally to be avoided).
-
 public:
 
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
 signals:
-	void dataLoaded();
+	void dataLoaded(Volume *volumeData);
 
 protected slots :
 
@@ -40,7 +38,7 @@ private:
 
 	// USER INTERFACE ELEMENTS
 
-	Ui_MainWindow *m_Ui;
+	Ui_MainWindow *ui;
 	GLWidget *glWidget;
 
 
@@ -57,11 +55,11 @@ private:
 	{
 		QString filename;
 		DataType type;
-	} m_FileType;
+	} fileType;
 
-	Volume *m_Volume; // for Volume-Rendering
-	VectorField *m_VectorField; // for Flow-Visualisation
-	MultiSet *m_MultiSet; // for Multivariate Data
+	Volume *volume; // for Volume-Rendering
+	VectorField *vectorField; // for Flow-Visualisation
+	MultiSet *multiSet; // for Multivariate Data
 
 };
 

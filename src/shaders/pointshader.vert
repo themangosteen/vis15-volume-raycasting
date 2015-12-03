@@ -16,6 +16,6 @@ void main()
     intensity = vertexData.w;
     P = (modelMat * vec4(vertexData.xyz, 1)).xyz;
 
-    gl_PointSize = max(500/-(viewMat * vec4(P, 1)).z, 2);
+    gl_PointSize = max(200/-(viewMat * vec4(P, 1)).z, 2);
     gl_Position = projMat * viewMat * modelMat * vec4(vertexData.xyz, 1);
 }

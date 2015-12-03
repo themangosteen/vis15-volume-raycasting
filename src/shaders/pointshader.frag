@@ -10,5 +10,5 @@ uniform vec4 color;
 
 void main()
 {
-    outColor = vec4(1.0f, 1.0f, 1.0f, 1.0f) * intensity;
+    outColor = vec4(intensity+0.5, intensity+0.5, intensity+0.5, 0.1f);
 }

@@ -19,6 +19,8 @@ void GLWidget::initializeGL()
 	connect(logger, &QOpenGLDebugLogger::messageLogged, this, &GLWidget::printDebugMsg);
 	logger->startLogging();
 
+	glf->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glf->glEnable(GL_BLEND);
 	glf->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// load, compile and link vertex and fragment shaders
@@ -30,13 +32,11 @@ void GLWidget::initializeGL()
 
 	// init view matrix (inverse camera model matrix) and projection matrix
 	QMatrix4x4 cameraModelMat;
-	//cameraModelMat.rotate(10, 0, 1, 0);
-	cameraModelMat.translate(0, 0, 50);
+	cameraModelMat.rotate(10, 0, 0.2, 0.2);
+	cameraModelMat.translate(0, 0, 100);
 	viewMat = cameraModelMat.inverted();
-	projMat.perspective(45.0, this->width()/this->height(), 1.0, 500.0);
+	projMat.perspective(90.0, this->width()/this->height(), 1.0, 500.0);
 
-	// get volume data
-	volumeData = mainWindow->m_Volume;
 
 	// generate vertex array object (vao).
 	// subsequent bindings related to vertex buffer data and shader variables
@@ -78,7 +78,7 @@ void GLWidget::resizeGL(int w, int h)
 	shader->bind();
 	vao.bind();
 	projMat.setToIdentity();
-	projMat.perspective(mainWindow->m_Ui->horizontalSlider_0->value(), w/h, 1.0, 500.0);
+	projMat.perspective(90.0, w/h, 1.0, 500.0);
 	shader->setUniformValue(shader->uniformLocation("projMat"), projMat);
 	vao.release();
 	shader->release();
@@ -101,11 +101,12 @@ void GLWidget::paintGL()
 	// TODO
 }
 
-void GLWidget::dataLoaded()
+void GLWidget::dataLoaded(Volume *volumeData)
 {
 	// get volume data
-	volumeData = mainWindow->m_Volume;
+	this->volumeData = volumeData;
 
+	int emptyVoxelCount = 0;
 	if (volumeData != nullptr) {
 
 		vertices.clear();
@@ -113,16 +114,20 @@ void GLWidget::dataLoaded()
 		for (int i = 0; i < volumeData->width(); ++i) {
 			for (int j = 0; j < volumeData->height(); ++j) {
 				for (int k = 0; k < volumeData->depth(); ++k) {
-					vertices.push_back(i);
-					vertices.push_back(j);
-					vertices.push_back(k);
+					if (volumeData->voxel(i, j, k).getValue() == 0) {
+						++emptyVoxelCount;
+						continue;
+					}
+					vertices.push_back(-volumeData->width()/2 + i);
+					vertices.push_back(-volumeData->height()/2 + j);
+					vertices.push_back(-volumeData->depth()/2 + k);
 					vertices.push_back(volumeData->voxel(i, j, k).getValue());
 				}
 			}
 		}
 	}
 
-	qWarning() << "data loaded" << vertices.size();
+	qWarning("volume data loaded: %d / %d voxels (skipped %d empty)", vertices.size()/4, volumeData->width()*volumeData->height()*volumeData->depth(), emptyVoxelCount);
 
 	shader->bind();
 	vao.bind();
@@ -140,5 +145,19 @@ void GLWidget::dataLoaded()
 	vao.release();
 	vbo.release();
 	shader->release();
+}
+
+void GLWidget::setFoV(int angle)
+{
+	// update projection matrix
+	shader->bind();
+	vao.bind();
+	projMat.setToIdentity();
+	projMat.perspective(angle, this->width()/this->height(), 1.0, 500.0);
+	shader->setUniformValue(shader->uniformLocation("projMat"), projMat);
+	vao.release();
+	shader->release();
+
+	repaint();
 }
 
