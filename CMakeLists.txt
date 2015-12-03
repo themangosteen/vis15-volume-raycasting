@@ -61,8 +61,8 @@ set(SRC_CLASSES
 # relative path to shader files
 set(SRC_SHADERS
 
-    src/shaders/testshader.vert
-    src/shaders/testshader.frag
+    src/shaders/pointshader.vert
+    src/shaders/pointshader.frag
 
     )
 

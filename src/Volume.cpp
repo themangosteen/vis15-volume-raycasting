@@ -216,7 +216,6 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	int test = INT_MAX;
 	m_Voxels.resize(m_Size);
 
-
 	// read volume data
 
 	// read into vector before writing data into volume to speed up process

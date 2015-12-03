@@ -20,11 +20,15 @@ class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
+	friend class GLWidget; // let GLWidget access private members (saves a lot of writing but generally to be avoided).
+
 public:
 
 	MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+signals:
+	void dataUpdated();
 
 protected slots :
 

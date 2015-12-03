@@ -92,14 +92,17 @@
          </spacer>
         </item>
         <item>
-         <widget class="QSlider" name="horizontalSlider_3">
+         <widget class="QSlider" name="horizontalSlider_0">
+          <property name="value">
+           <number>50</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="horizontalSlider">
+         <widget class="QSlider" name="horizontalSlider_1">
           <property name="minimumSize">
            <size>
             <width>50</width>
@@ -181,8 +184,8 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>horizontalSlider_3</tabstop>
-  <tabstop>horizontalSlider</tabstop>
+  <tabstop>horizontalSlider_0</tabstop>
+  <tabstop>horizontalSlider_1</tabstop>
   <tabstop>horizontalSlider_2</tabstop>
   <tabstop>pushButton</tabstop>
  </tabstops>
