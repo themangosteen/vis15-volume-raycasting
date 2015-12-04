@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
 	connect(this, &MainWindow::dataLoaded, glWidget, &GLWidget::dataLoaded);
 
-	connect(ui->horizontalSlider_0, &QSlider::valueChanged, glWidget, &GLWidget::setFoV);
+	connect(ui->horizontalSlider_0, &QSlider::valueChanged, glWidget, &GLWidget::setBackgroundColor);
 
 }
 

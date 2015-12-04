@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLShader>
+#include <QOpenGLTexture>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 
@@ -24,7 +25,7 @@ public:
 
 public slots:
 	void dataLoaded(Volume *volumeData);
-	void setFoV(int angle); // angle in degree
+	void setBackgroundColor(int intensity);
 
 protected:
 
@@ -36,7 +37,11 @@ protected:
 
 private:
 
-	void render();
+	void raycast();
+
+	void initShaders();
+	void initTextures();
+	void initVolumeCubeBBoxVBO();
 
 	MainWindow * mainWindow;
 
@@ -45,7 +50,13 @@ private:
 
 	QOpenGLFunctions_3_3_Core *glf;
 
-	QOpenGLShaderProgram *shader;
+	QOpenGLShaderProgram *rayVolumeExitPosMapShader;
+	QOpenGLShaderProgram *raycastShader;
+
+	QOpenGLTexture *transferFunction1DTex;
+	QOpenGLTexture *rayVolumeExitPosMap2DTex;
+	QOpenGLTexture *volume3DTex;
+
 	QOpenGLBuffer vbo;
 	QOpenGLVertexArrayObject vao;
 
@@ -60,6 +71,8 @@ private:
 		2.0f,   10.0f,  0.0f,  0.6f,
 		0.0f,   5.0f,  3.0f, 0.2f
 	}; // delete this
+
+	QColor backgroundColor;
 
 
 
