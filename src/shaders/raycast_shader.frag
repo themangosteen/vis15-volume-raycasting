@@ -4,6 +4,7 @@
 in vec3 entryPos;
 
 // interpolated exit position in world space
+// this can be used for better sampling of the exitPositions texture
 in vec4 exitPosWorld;
 
 // out location 0 is piped directly to the default draw buffer
@@ -22,13 +23,14 @@ void main()
     // determine ray exit position (sample exitPositions texture)
     vec3 exitPos = texture2D(exitPositions, gl_FragCoord.st/screenDimensions).xyz;
 
-    // TODO EXPLAIN
-    // that will actually give you clip-space coordinates rather than
+    // alternative sampling of the exitPositions texture using exitPosWorld
+    // TODO WHAT ABOUT THIS?
+    // quote: that will actually give you clip-space coordinates rather than
     // normalised device coordinates, since you're not performing the perspective
     // division which happens during the rasterisation process (between the vertex
     // shader and fragment shader
-    //vec2 exitFragCoord = (ExitPointCoord.xy / ExitPointCoord.w + 1.0)/2.0;
-    //vec3 exitPoint  = texture(ExitPoints, exitFragCoord).xyz;
+    //vec2 exitFragCoord = (exitPosWorld.xy / exitPosWorld.w + 1.0)/2.0;
+    //vec3 exitPos  = texture(exitPositions, exitFragCoord).xyz;
 
     // TODO EXPLAIN
     if (entryPos == exitPos) {
@@ -57,7 +59,7 @@ void main()
         intensity = texture3D(volume, currentVoxel).x;
         mappedColor = texture1D(transferFunction, intensity);
 
-        // CHANGE TO MAXIMUM INTENSITY PROJECTION
+        // TODO CHANGE TO MAXIMUM INTENSITY PROJECTION
         // REUSE ALPHA COMPOSITING CODE LATER (SWITCH BETWEEN MODES VIA UNIFORM INT)
         // modulate the value of colorSample.a
         // front-to-back integration

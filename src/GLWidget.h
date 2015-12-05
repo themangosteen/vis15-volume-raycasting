@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLShader>
+#include <QOpenGLFramebufferObject>
 #include <QOpenGLTexture>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
@@ -37,11 +38,12 @@ protected:
 
 private:
 
-	void raycast();
-
 	void initShaders();
-	void initTextures();
-	void initVolumeCubeBBoxVBO();
+	void initVolumeBBoxCubeVBO();
+	void loadTransferFunction1DTex();
+	void initRayVolumeExitPosMap2DTex();
+	void loadVolume3DTex();
+	void drawVolumeBBoxCube(GLenum glFaceCullingMode, QOpenGLShaderProgram *shader);
 
 	MainWindow * mainWindow;
 
@@ -55,22 +57,50 @@ private:
 
 	QOpenGLTexture *transferFunction1DTex;
 	QOpenGLTexture *rayVolumeExitPosMap2DTex;
+	QOpenGLFramebufferObject *rayVolumeExitPosMapFramebuffer;
 	QOpenGLTexture *volume3DTex;
 
-	QOpenGLBuffer vbo;
-	QOpenGLVertexArrayObject vao;
+	Volume *volumeData;
+
+	QOpenGLVertexArrayObject volumeBBoxCubeVAO;
 
 	QMatrix4x4 modelMat;
 	QMatrix4x4 viewMat;
 	QMatrix4x4 projMat;
 
-	Volume *volumeData;
-	std::vector<float> vertices = {
-		0.0f,   2.0f,   1.0f,  0.9f,
-		4.0f,  3.0f,   4.0f,  0.4f,
-		2.0f,   10.0f,  0.0f,  0.6f,
-		0.0f,   5.0f,  3.0f, 0.2f
-	}; // delete this
+	GLfloat cubeVertices[24] = {
+		// front
+		0.0, 0.0, 1.0,
+		1.0, 0.0, 1.0,
+		1.0, 1.0, 1.0,
+		0.0, 1.0, 1.0,
+		// back
+		0.0, 0.0, 0.0,
+		1.0, 0.0, 0.0,
+		1.0, 1.0, 0.0,
+		0.0, 1.0, 0.0,
+	};
+
+	GLuint cubeTriangleIndices[36] = {
+		// front
+		0, 1, 2,
+		2, 3, 0,
+		// top
+		1, 5, 6,
+		6, 2, 1,
+		// back
+		7, 6, 5,
+		5, 4, 7,
+		// bottom
+		4, 0, 3,
+		3, 7, 4,
+		// left
+		4, 5, 1,
+		1, 0, 4,
+		// right
+		3, 2, 6,
+		6, 7, 3,
+	};
 
 	QColor backgroundColor;
 

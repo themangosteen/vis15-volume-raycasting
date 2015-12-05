@@ -66,9 +66,6 @@ set(SRC_SHADERS
     src/shaders/raycast_shader.vert
     src/shaders/raycast_shader.frag
 
-    src/shaders/point_shader.vert
-    src/shaders/point_shader.frag
-
     )
 
 QT5_WRAP_UI(UI_HEADERS
