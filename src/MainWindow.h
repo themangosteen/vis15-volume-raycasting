@@ -5,8 +5,6 @@
 #include "ui_MainWindow.h"
 #include "GLWidget.h"
 #include "Volume.h"
-#include "VectorField.h"
-#include "MultiSet.h"
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -46,9 +44,7 @@ private:
 
 	enum DataType
 	{
-		VOLUME			= 0,
-		VECTORFIELD		= 1,
-		MULTIVARIATE	= 2
+		VOLUME = 0,
 	};
 
 	struct FileType
@@ -58,8 +54,6 @@ private:
 	} fileType;
 
 	Volume *volume; // for Volume-Rendering
-	VectorField *vectorField; // for Flow-Visualisation
-	MultiSet *multiSet; // for Multivariate Data
 
 };
 

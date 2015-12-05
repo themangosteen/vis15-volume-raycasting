@@ -41,20 +41,12 @@ find_package(Qt5OpenGLExtensions)
 set(SRC_CLASSES 
 
     src/Main.cpp
-    
     src/MainWindow.h
     src/MainWindow.cpp
     src/GLWidget.h
     src/GLWidget.cpp
-    
-    src/Vector.h
-    src/Vector.cpp
     src/Volume.h
     src/Volume.cpp
-    src/VectorField.h
-    src/VectorField.cpp
-    src/MultiSet.h
-    src/MultiSet.cpp
     
     )
 	

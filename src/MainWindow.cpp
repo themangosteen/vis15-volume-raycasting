@@ -6,7 +6,7 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent), volume(0), vectorField(0)
+	: QMainWindow(parent), volume(0)
 {
 	ui = new Ui_MainWindow();
 	ui->setupUi(this);
@@ -25,8 +25,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 	delete volume;
-	delete vectorField;
-	delete multiSet;
 }
 
 
@@ -37,7 +35,7 @@ MainWindow::~MainWindow()
 void MainWindow::openFileAction()
 {
 
-	QString filename = QFileDialog::getOpenFileName(this, "Data File", 0, tr("Data Files (*.dat *.gri *.csv)"));
+	QString filename = QFileDialog::getOpenFileName(this, "Data File", 0, tr("Data Files (*.dat)"));
 
 	if (!filename.isEmpty())
 	{
@@ -61,24 +59,6 @@ void MainWindow::openFileAction()
 			// load file
 			success = volume->loadFromFile(filename, ui->progressBar);
 		}
-		else if (fn.substr(fn.find_last_of(".") + 1) == "gri")		// LOAD VECTORFIELD
-		{
-			// create VECTORFIELD
-			fileType.type = VECTORFIELD;
-			vectorField = new VectorField();
-
-			// load file
-			success = vectorField->loadFromFile(filename, ui->progressBar);
-		}
-		else if (fn.substr(fn.find_last_of(".") + 1) == "csv")		// LOAD MULTIVARIATE DATA
-		{
-			// create MULTIVARIATE
-			fileType.type = MULTIVARIATE;
-			multiSet = new MultiSet();
-
-			// load file
-			success = multiSet->loadFromFile(filename, ui->progressBar);
-		}
 
 		ui->progressBar->setEnabled(false);
 		ui->progressBar->hide();
@@ -91,8 +71,6 @@ void MainWindow::openFileAction()
 				type = "VOLUME";
 				emit dataLoaded(volume);
 			}
-			else if (fileType.type == VECTORFIELD) type = "VECTORFIELD";
-			else if (fileType.type == MULTIVARIATE) type = "MULTIVARIATE";
 			ui->labelTop->setText("File LOADED [" + filename + "] - Type [" + type + "]");
 		}
 		else
