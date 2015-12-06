@@ -6,17 +6,20 @@ void GLWidget::initializeGL()
 {
 	// obtain a gl functions object and resolve all entry points
 	// in this case we use QOpenGLFunctions_3_3_Core* gl functions
+	// this supports glTexImage3D
 	glf = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
 	if (!glf) { qWarning("Could not obtain OpenGL versions object"); exit(1); }
 	glf->initializeOpenGLFunctions();
+
+	/*for (auto e : QOpenGLContext::currentContext()->extensions()) {
+		qWarning() << e;
+	}*/
 
 	// print glError messages
 	logger = new QOpenGLDebugLogger(this);
 	logger->initialize();
 	connect(logger, &QOpenGLDebugLogger::messageLogged, this, &GLWidget::printDebugMsg);
 	logger->startLogging();
-
-	backgroundColor = QColor(220, 220, 255);
 
 	// load, compile and link vertex and fragment shaders
 	initShaders();
@@ -118,26 +121,17 @@ void GLWidget::loadVolume3DTex()
 	}
 
 	// fill volumeData into a 3D texture
-
-//	volume3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
-//	volume3DTex->create();
-//	volume3DTex->setFormat(QOpenGLTexture::R32F);
-//	volume3DTex->setWrapMode(QOpenGLTexture::Repeat);
-//	volume3DTex->setMinificationFilter(QOpenGLTexture::Linear); // this is trilinear interpolation
-//	volume3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
-//	volume3DTex->bind();
-
-	glf->glGenTextures(1, &volume3DTexId);
-	glf->glBindTexture(GL_TEXTURE_3D, volume3DTexId);
-	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
-
-	glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO do we need this?
+	volume3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
+	volume3DTex->create();
+	volume3DTex->setFormat(QOpenGLTexture::R32F);
+	volume3DTex->setWrapMode(QOpenGLTexture::Repeat);
+	volume3DTex->setMinificationFilter(QOpenGLTexture::Linear); // this is trilinear interpolation
+	volume3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
+	volume3DTex->bind();
 	// we can simply pass a pointer to the voxel vector since vocels only have a float member each it is same as a float array
-	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_LUMINANCE, GL_FLOAT, volume->getVoxels());
+	// note that for some reason we need to use internalformat GL_RGB (i.e. 3 channels) since GL_INTENSITY doesnt work.
+	// yet the pixel data is still interpreted as a single intensity value due to GL_INTENSITY.
+	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_RED, GL_FLOAT, volume->getVoxels());
 
 }
 
@@ -146,7 +140,6 @@ void GLWidget::dataLoaded(Volume *volumeData)
 	this->volume = volumeData;
 
 	loadVolume3DTex();
-
 
 }
 
@@ -191,9 +184,7 @@ void GLWidget::paintGL()
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, rayVolumeExitPosMapFramebuffer->texture());
 	raycastShader->setUniformValue("volume", 2);
-	//volume3DTex->bind(2);
-	glActiveTexture(GL_TEXTURE0 + 2);
-	glBindTexture(GL_TEXTURE_3D, volume3DTexId);
+	volume3DTex->bind(2);
 
 	// draw volume cube front faces (back face culling enabled)
 	// raycastShader then uses interpolated front face (ray entry) positions with exit positions from first pass
@@ -214,18 +205,19 @@ void GLWidget::drawVolumeBBoxCube(GLenum glFaceCullMode, QOpenGLShaderProgram *s
 {
 	glf->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//note that it doesnt matter how we transform the cube, since sampling rays are created between interpolated model space vertex positions
+	// note that it doesnt matter to volume sampling how we transform the cube, since sampling rays are created between interpolated model space vertex positions
 	modelMat.setToIdentity();
+	modelMat.rotate(90, QVector3D(1, 0, 0));
 	modelMat.translate(QVector3D(-0.5f, -0.5f, -0.5f)); // move volume bounding box cube to center
 	viewMat.setToIdentity();
 //	QMatrix4x4 cameraModelMat;
 //	cameraModelMat.rotate(10, 0, 0.2, 0.2);
 //	cameraModelMat.translate(0, 0, 100);
 //	viewMat = cameraModelMat.inverted();
-	viewMat.lookAt(QVector3D(2.0f, 2.0f, 2.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f)); // move camera slightly back and look at center
+	viewMat.lookAt(QVector3D(1.0f, 1.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f)); // move camera slightly back and look at center
 	projMat.setToIdentity();
-	//projMat.perspective(60.0f, this->width()/this->height(), 0.1f, 400.f);
-	projMat.ortho(-1.f, 1.f, -1.f, 1.f, 0.1f, 400.f);
+	projMat.perspective(60.0f, this->width()/this->height(), 0.1f, 400.f);
+	//projMat.ortho(-1.f, 1.f, -1.f, 1.f, 0.1f, 400.f);
 
 	shader->bind();
 	int mvpMatUniformIndex = shader->uniformLocation("modelViewProjMat");

@@ -61,7 +61,6 @@ private:
 	QOpenGLTexture *transferFunction1DTex;
 	QOpenGLFramebufferObject *rayVolumeExitPosMapFramebuffer;
 	QOpenGLTexture *volume3DTex;
-	GLuint volume3DTexId;
 
 	Volume *volume;
 
