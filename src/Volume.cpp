@@ -28,12 +28,12 @@ Voxel::~Voxel()
 
 void Voxel::setValue(const float value)
 {
-	m_Value = value;
+	this->value = value;
 }
 
 const float Voxel::getValue() const
 {
-	return m_Value;
+	return value;
 };
 
 const bool Voxel::operator==(const Voxel &other) const
@@ -68,25 +68,25 @@ const bool Voxel::operator<=(const Voxel &other) const
 
 const Voxel& Voxel::operator+=(const Voxel &other)
 {
-	m_Value += other.m_Value;
+	value += other.value;
 	return *this;
 };
 
 const Voxel& Voxel::operator-=(const Voxel &other)
 {
-	m_Value -= other.m_Value;
+	value -= other.value;
 	return *this;
 };
 
 const Voxel& Voxel::operator*=(const float &value)
 {
-	m_Value *= value;
+	this->value *= value;
 	return *this;
 };
 
 const Voxel& Voxel::operator/=(const float &value)
 {
-	m_Value /= value;
+	this->value /= value;
 	return *this;
 };
 
@@ -124,7 +124,7 @@ const Voxel Voxel::operator/(const float &value) const
 //-------------------------------------------------------------------------------------------------
 
 Volume::Volume()
-	: m_Voxels(1), m_Width(1), m_Height(1), m_Depth(1), m_Size(0)
+	: voxels(1), width(1), height(1), depth(1), size(0)
 {
 }
 
@@ -132,39 +132,39 @@ Volume::~Volume()
 {
 }
 
-const Voxel& Volume::voxel(const int x, const int y, const int z) const
+const Voxel& Volume::getVoxel(const int x, const int y, const int z) const
 {
-	return m_Voxels[x + y*m_Width + z*m_Width*m_Height];
+	return voxels[x + y*width + z*width*height];
 }
 
-const Voxel& Volume::voxel(const int i) const
+const Voxel& Volume::getVoxel(const int i) const
 {
-	return m_Voxels[i];
+	return voxels[i];
 }
 
-const Voxel* Volume::voxels() const
+const Voxel* Volume::getVoxels() const
 {
-	return &(m_Voxels.front());
+	return &(voxels.front());
 };
 
-const int Volume::width() const
+const int Volume::getWidth() const
 {
-	return m_Width;
+	return width;
 };
 
-const int Volume::height() const
+const int Volume::getHeight() const
 {
-	return m_Height;
+	return height;
 };
 
-const int Volume::depth() const
+const int Volume::getDepth() const
 {
-	return m_Depth;
+	return depth;
 };
 
-const int Volume::size() const
+const int Volume::getSize() const
 {
-	return m_Size;
+	return size;
 };
 
 
@@ -185,7 +185,7 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	// progress bar
 
-	progressBar->setRange(0, m_Size + 10);
+	progressBar->setRange(0, size + 10);
 	progressBar->setValue(0);
 
 
@@ -196,15 +196,15 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	fread(&uHeight, sizeof(unsigned short), 1, fp);
 	fread(&uDepth, sizeof(unsigned short), 1, fp);
 	
-	m_Width = int(uWidth);
-	m_Height = int(uHeight);
-	m_Depth = int(uDepth);
+	width = int(uWidth);
+	height = int(uHeight);
+	depth = int(uDepth);
 
 	// check dataset dimensions
 	if (
-		m_Width <= 0 || m_Width > 1000 ||
-		m_Height <= 0 || m_Height > 1000 ||
-		m_Depth <= 0 || m_Depth > 1000)
+		width <= 0 || width > 1000 ||
+		height <= 0 || height > 1000 ||
+		depth <= 0 || depth > 1000)
 	{
 		std::cerr << "+ Error loading file: " << filename.toStdString() << std::endl;
 		std::cerr << "Unvalid dimensions - probably loaded .dat flow file instead of .gri file?" << std::endl;
@@ -212,17 +212,17 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 	}
 
 	// compute dimensions
-	int slice = m_Width * m_Height;
-	m_Size = slice * m_Depth;
-	int test = INT_MAX;
-	m_Voxels.resize(m_Size);
+	int slice = width * height;
+	size = slice * depth;
+	//int test = INT_MAX;
+	voxels.resize(size);
 
 	// read volume data
 
 	// read into vector before writing data into volume to speed up process
 	std::vector<unsigned short> vecData;
-	vecData.resize(m_Size);
-	fread((void*)&(vecData.front()), sizeof(unsigned short), m_Size, fp);
+	vecData.resize(size);
+	fread((void*)&(vecData.front()), sizeof(unsigned short), size, fp);
 	fclose(fp);
 
 	progressBar->setValue(10);
@@ -230,13 +230,13 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	// store volume data
 
-	for (int i = 0; i < m_Size; i++)
+	for (int i = 0; i < size; i++)
 	{
 		// data is converted to FLOAT values in an interval of [0.0 .. 1.0];
 		// uses 4095.0f to normalize the data, because only 12bit are used for the
 		// data values, and then 4095.0f is the maximum possible value
 		const float value = fmax(0.0f, fmin(1.0f, float(vecData[i]) / 4095.0f));
-		m_Voxels[i] = Voxel(value);
+		voxels[i] = Voxel(value);
 		
 		progressBar->setValue(10 + i);
 
@@ -244,7 +244,7 @@ bool Volume::loadFromFile(QString filename, QProgressBar* progressBar)
 
 	progressBar->setValue(0);
 
-	std::cout << "Loaded VOLUME with dimensions " << m_Width << " x " << m_Height << " x " << m_Depth << std::endl;
+	std::cout << "Loaded VOLUME with dimensions " << width << " x " << height << " x " << depth << std::endl;
 
 	return true;
 }

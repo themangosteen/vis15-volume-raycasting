@@ -57,12 +57,16 @@ void main()
     // but should be sufficient to traverse all practical volumes
     for (int i = 0; i < 1600; ++i) {
 
-        intensity = texture3D(volume, currentVoxel).x;
+        intensity = texture3D(volume, currentVoxel).r;
+        //outColor = vec4(currentVoxel, 1);
 
         if (true) { // MAXIMUM INTENSITY PROJECTION
 
             if (intensity > maxIntensity) {
                 maxIntensity = intensity;
+            }
+            if (distanceTraversed >= rayDistance) {
+                break;
             }
 
         } else { // TODO ALPHA COMPOSITING (SWITCH BETWEEN MODES VIA UNIFORM INT)

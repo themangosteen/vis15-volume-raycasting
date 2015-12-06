@@ -26,7 +26,7 @@ public:
 	~GLWidget();
 
 public slots:
-	void dataLoaded(Volume *volumeData);
+	void dataLoaded(Volume *volume);
 	void setBackgroundColor(int intensity);
 
 protected:
@@ -61,8 +61,9 @@ private:
 	QOpenGLTexture *transferFunction1DTex;
 	QOpenGLFramebufferObject *rayVolumeExitPosMapFramebuffer;
 	QOpenGLTexture *volume3DTex;
+	GLuint volume3DTexId;
 
-	Volume *volumeData;
+	Volume *volume;
 
 	QOpenGLVertexArrayObject volumeBBoxCubeVAO;
 

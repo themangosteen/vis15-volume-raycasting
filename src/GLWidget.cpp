@@ -113,48 +113,37 @@ void GLWidget::initRayVolumeExitPosMapFramebuffer()
 
 void GLWidget::loadVolume3DTex()
 {
-	if (volumeData == nullptr) {
+	if (volume == nullptr) {
 		return;
 	}
 
 	// fill volumeData into a 3D texture
-	volume3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
-	volume3DTex->create();
-	volume3DTex->setFormat(QOpenGLTexture::R32F);
-	volume3DTex->setWrapMode(QOpenGLTexture::Repeat);
-	volume3DTex->setMinificationFilter(QOpenGLTexture::Linear); // this is trilinear interpolation
-	volume3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
 
-	volume3DTex->bind();
-	glf->glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, volumeData->width(), volumeData->height(), volumeData->depth(), 0, GL_LUMINANCE, GL_FLOAT, volumeData->voxels());
+//	volume3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
+//	volume3DTex->create();
+//	volume3DTex->setFormat(QOpenGLTexture::R32F);
+//	volume3DTex->setWrapMode(QOpenGLTexture::Repeat);
+//	volume3DTex->setMinificationFilter(QOpenGLTexture::Linear); // this is trilinear interpolation
+//	volume3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
+//	volume3DTex->bind();
 
-	//	int emptyVoxelCount = 0;
+	glf->glGenTextures(1, &volume3DTexId);
+	glf->glBindTexture(GL_TEXTURE_3D, volume3DTexId);
+	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glf->glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
-	//		voxels.clear();
+	glf->glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // TODO do we need this?
+	// we can simply pass a pointer to the voxel vector since vocels only have a float member each it is same as a float array
+	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_INTENSITY, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_LUMINANCE, GL_FLOAT, volume->getVoxels());
 
-	//		for (int i = 0; i < volumeData->width(); ++i) {
-	//			for (int j = 0; j < volumeData->height(); ++j) {
-	//				for (int k = 0; k < volumeData->depth(); ++k) {
-	//					if (volumeData->voxel(i, j, k).getValue() == 0) {
-	//						++emptyVoxelCount;
-	//						continue;
-	//					}
-	//					voxels.push_back(-volumeData->width()/2 + i);
-	//					voxels.push_back(-volumeData->height()/2 + j);
-	//					voxels.push_back(-volumeData->depth()/2 + k);
-	//					voxels.push_back(volumeData->voxel(i, j, k).getValue());
-	//				}
-	//			}
-	//		}
-	//	}
-
-	//	qWarning("volume data loaded: %d / %d voxels (skipped %d empty)", int(voxels.size()/4.0f), volumeData->size(), emptyVoxelCount);
 }
 
 void GLWidget::dataLoaded(Volume *volumeData)
 {
-	this->volumeData = volumeData;
+	this->volume = volumeData;
 
 	loadVolume3DTex();
 
@@ -166,7 +155,7 @@ void GLWidget::paintGL()
 	glf->glClearColor(backgroundColor.red()/256.0f, backgroundColor.green()/256.0f, backgroundColor.blue()/256.0f, 1.0f);
 	glf->glClear(GL_COLOR_BUFFER_BIT);
 
-	if (!volumeData) {
+	if (!volume) {
 		return;
 	}
 
@@ -202,7 +191,9 @@ void GLWidget::paintGL()
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, rayVolumeExitPosMapFramebuffer->texture());
 	raycastShader->setUniformValue("volume", 2);
-	volume3DTex->bind(2);
+	//volume3DTex->bind(2);
+	glActiveTexture(GL_TEXTURE0 + 2);
+	glBindTexture(GL_TEXTURE_3D, volume3DTexId);
 
 	// draw volume cube front faces (back face culling enabled)
 	// raycastShader then uses interpolated front face (ray entry) positions with exit positions from first pass
@@ -223,6 +214,7 @@ void GLWidget::drawVolumeBBoxCube(GLenum glFaceCullMode, QOpenGLShaderProgram *s
 {
 	glf->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	//note that it doesnt matter how we transform the cube, since sampling rays are created between interpolated model space vertex positions
 	modelMat.setToIdentity();
 	modelMat.translate(QVector3D(-0.5f, -0.5f, -0.5f)); // move volume bounding box cube to center
 	viewMat.setToIdentity();
