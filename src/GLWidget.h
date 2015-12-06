@@ -23,6 +23,7 @@ public:
 	explicit GLWidget(QWidget *parent) : QOpenGLWidget(parent) {
 		mainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent());
 	}
+	~GLWidget();
 
 public slots:
 	void dataLoaded(Volume *volumeData);
@@ -39,10 +40,12 @@ protected:
 private:
 
 	void initShaders();
-	void initVolumeBBoxCubeVBO();
+
 	void loadTransferFunction1DTex();
-	void initRayVolumeExitPosMap2DTex();
+	void initRayVolumeExitPosMapFramebuffer();
 	void loadVolume3DTex();
+
+	void initVolumeBBoxCubeVBO();
 	void drawVolumeBBoxCube(GLenum glFaceCullingMode, QOpenGLShaderProgram *shader);
 
 	MainWindow * mainWindow;
@@ -56,7 +59,6 @@ private:
 	QOpenGLShaderProgram *raycastShader;
 
 	QOpenGLTexture *transferFunction1DTex;
-	QOpenGLTexture *rayVolumeExitPosMap2DTex;
 	QOpenGLFramebufferObject *rayVolumeExitPosMapFramebuffer;
 	QOpenGLTexture *volume3DTex;
 
