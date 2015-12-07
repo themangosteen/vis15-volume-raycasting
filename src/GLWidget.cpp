@@ -11,10 +11,6 @@ void GLWidget::initializeGL()
 	if (!glf) { qWarning("Could not obtain OpenGL versions object"); exit(1); }
 	glf->initializeOpenGLFunctions();
 
-	/*for (auto e : QOpenGLContext::currentContext()->extensions()) {
-		qWarning() << e;
-	}*/
-
 	// print glError messages
 	logger = new QOpenGLDebugLogger(this);
 	logger->initialize();
@@ -131,7 +127,7 @@ void GLWidget::loadVolume3DTex()
 	// we can simply pass a pointer to the voxel vector since vocels only have a float member each it is same as a float array
 	// note that for some reason we need to use internalformat GL_RGB (i.e. 3 channels) since GL_INTENSITY doesnt work.
 	// yet the pixel data is still interpreted as a single intensity value due to GL_INTENSITY.
-	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_RED, GL_FLOAT, volume->getVoxels());
+	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_LUMINANCE, GL_FLOAT, volume->getVoxels());
 
 }
 
@@ -177,7 +173,9 @@ void GLWidget::paintGL()
 
 	raycastShader->bind();
 	raycastShader->setUniformValue("screenDimensions", QVector2D(this->width(), this->height()));
-	raycastShader->setUniformValue("rayStepSize", 0.001f);
+	raycastShader->setUniformValue("numSamples", numSamples);
+	raycastShader->setUniformValue("sampleRangeStart", sampleRangeStart);
+	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
 	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
 	transferFunction1DTex->bind(0); // bind texture to texture unit 0
 	raycastShader->setUniformValue("exitPositions", 1);
@@ -216,8 +214,8 @@ void GLWidget::drawVolumeBBoxCube(GLenum glFaceCullMode, QOpenGLShaderProgram *s
 //	viewMat = cameraModelMat.inverted();
 	viewMat.lookAt(QVector3D(1.0f, 1.0f, 1.0f), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f)); // move camera slightly back and look at center
 	projMat.setToIdentity();
-	projMat.perspective(60.0f, this->width()/this->height(), 0.1f, 400.f);
-	//projMat.ortho(-1.f, 1.f, -1.f, 1.f, 0.1f, 400.f);
+	projMat.perspective(60.0f, this->width()/this->height(), 0.1f, 1000.f);
+	//projMat.ortho(-0.8f, 0.8f, -0.8f, 0.8f, 0.8f, 1000.f);
 
 	shader->bind();
 	int mvpMatUniformIndex = shader->uniformLocation("modelViewProjMat");
@@ -239,9 +237,21 @@ void GLWidget::resizeGL(int w, int h)
 
 }
 
-void GLWidget::setBackgroundColor(int intensity)
-{	
-	backgroundColor = QColor(intensity, intensity, intensity);
+void GLWidget::setNumSamples(int numSamples)
+{
+	this->numSamples = numSamples;
+	repaint();
+}
+
+void GLWidget::setSampleRangeStart(double sampleRangeStart)
+{
+	this->sampleRangeStart = float(sampleRangeStart);
+	repaint();
+}
+
+void GLWidget::setSampleRangeEnd(double sampleRangeEnd)
+{
+	this->sampleRangeEnd = float(sampleRangeEnd);
 	repaint();
 }
 

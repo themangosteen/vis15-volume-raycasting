@@ -18,7 +18,10 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFileAction()));
 	connect(this, &MainWindow::dataLoaded, glWidget, &GLWidget::dataLoaded);
 
-	connect(ui->horizontalSlider_0, &QSlider::valueChanged, glWidget, &GLWidget::setBackgroundColor);
+	connect(ui->numSamplesSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), glWidget, &GLWidget::setNumSamples);
+	connect(ui->sampleStartSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeStart);
+	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
+
 
 }
 
@@ -71,7 +74,7 @@ void MainWindow::openFileAction()
 				type = "VOLUME";
 				emit dataLoaded(volume);
 			}
-			ui->labelTop->setText("File LOADED [" + filename + "] - Type [" + type + "]");
+			ui->labelTop->setText(QString("Loaded VOLUME with dimensions %1 x %2 x %3 \n %4").arg(QString::number(volume->getWidth()), QString::number(volume->getHeight()), QString::number(volume->getDepth()), filename));
 		}
 		else
 		{
