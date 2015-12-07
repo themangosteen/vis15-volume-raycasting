@@ -27,7 +27,10 @@ public:
 
 public slots:
 	void dataLoaded(Volume *volume);
-	void setBackgroundColor(int intensity);
+
+	void setNumSamples(int numSamples);
+	void setSampleRangeStart(double sampleRangeStart);
+	void setSampleRangeEnd(double sampleRangeEnd);
 
 protected:
 
@@ -105,7 +108,9 @@ private:
 	};
 
 	QColor backgroundColor;
-
+	int numSamples = 200;
+	float sampleRangeStart = 0.000f;
+	float sampleRangeEnd = 1.000f;
 
 
 };
