@@ -3,10 +3,6 @@
 // interpolated entry position for a ray through the volume
 in vec3 entryPos;
 
-// interpolated exit position in world space
-// this can be used for better sampling of the exitPositions texture
-in vec4 exitPosWorld;
-
 // out location 0 is piped directly to the default draw buffer
 out vec4 outColor;
 
@@ -22,17 +18,7 @@ uniform vec2 screenDimensions;
 void main()
 {
 
-    // determine ray exit position (sample exitPositions texture)
-    //vec3 exitPos = texture2D(exitPositions, gl_FragCoord.st/screenDimensions).xyz;
-
-    // alternative sampling of the exitPositions texture using exitPosWorld
-    // TODO WHAT ABOUT THIS?
-    // quote: that will actually give you clip-space coordinates rather than
-    // normalised device coordinates, since you're not performing the perspective
-    // division which happens during the rasterisation process (between the vertex
-    // shader and fragment shader
-    vec2 exitFragCoord = (exitPosWorld.xy / exitPosWorld.w + 1.0)/2.0;
-    vec3 exitPos  = texture2D(exitPositions, exitFragCoord).xyz;
+    vec3 exitPos = texture2D(exitPositions, gl_FragCoord.st/screenDimensions).xyz;
 
     if (entryPos == exitPos) {
         discard;

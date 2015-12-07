@@ -11,16 +11,11 @@ in vec3 vertexPosition;
 // note that since we already have the backface exit positions back face culling should be enabled here
 out vec3 entryPos;
 
-// the exit position in world coordinates
-out vec4 exitPosWorld;
-
 // uniforms use the same value for all vertices
 uniform mat4 modelViewProjMat;
 
 void main()
 {
     entryPos = vertexPosition; // store volume cube front face vertex positions in color information
-
     gl_Position = modelViewProjMat * vec4(vertexPosition, 1.0);
-    exitPosWorld = gl_Position; // used for better sampling of the exitPositions texture
 }
