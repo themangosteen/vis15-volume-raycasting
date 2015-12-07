@@ -30,6 +30,7 @@ protected slots :
 
 	void openFileAction();
 	void closeAction();
+    void setCompositing();
 
 
 private:

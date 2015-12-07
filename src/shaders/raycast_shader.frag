@@ -14,6 +14,7 @@ uniform int numSamples;
 uniform float sampleRangeStart;
 uniform float sampleRangeEnd;
 uniform vec2 screenDimensions;
+uniform bool alphaCompositing;
 
 void main()
 {
@@ -44,7 +45,7 @@ void main()
             intensity = texture3D(volume, currentVoxel).r;
             //outColor = vec4(currentVoxel, 1);
 
-            if (true) { // MAXIMUM INTENSITY PROJECTION
+            if (!alphaCompositing) { // MAXIMUM INTENSITY PROJECTION
 
                 if (intensity > maxIntensity) {
                     maxIntensity = intensity;

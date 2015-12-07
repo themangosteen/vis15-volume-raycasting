@@ -177,6 +177,7 @@ void GLWidget::paintGL()
 	raycastShader->setUniformValue("sampleRangeStart", sampleRangeStart);
 	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
 	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
+    raycastShader->setUniformValue("alphaCompositing", alphaCompositing); //by default false -> use MIP
 	transferFunction1DTex->bind(0); // bind texture to texture unit 0
 	raycastShader->setUniformValue("exitPositions", 1);
 	glActiveTexture(GL_TEXTURE0 + 1);
@@ -253,6 +254,12 @@ void GLWidget::setSampleRangeEnd(double sampleRangeEnd)
 {
 	this->sampleRangeEnd = float(sampleRangeEnd);
 	repaint();
+}
+
+void GLWidget::setAlphaCompositing(bool use)
+{
+    this->alphaCompositing = use;
+    repaint();
 }
 
 GLWidget::~GLWidget()

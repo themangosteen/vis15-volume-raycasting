@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->numSamplesSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), glWidget, &GLWidget::setNumSamples);
 	connect(ui->sampleStartSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeStart);
 	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
+    connect(ui->radioALPHA, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
+    connect(ui->radioMIP, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
 
 
 }
@@ -87,4 +89,9 @@ void MainWindow::openFileAction()
 void MainWindow::closeAction()
 {
 	close();
+}
+
+void MainWindow::setCompositing()
+{
+    glWidget->setAlphaCompositing(ui->radioALPHA->isChecked());
 }

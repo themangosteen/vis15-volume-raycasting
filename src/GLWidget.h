@@ -31,6 +31,7 @@ public slots:
 	void setNumSamples(int numSamples);
 	void setSampleRangeStart(double sampleRangeStart);
 	void setSampleRangeEnd(double sampleRangeEnd);
+    void setAlphaCompositing(bool use);
 
 protected:
 
@@ -111,6 +112,7 @@ private:
 	int numSamples = 200;
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
+    bool alphaCompositing = false;
 
 
 };
