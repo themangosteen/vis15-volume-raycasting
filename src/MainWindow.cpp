@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
     connect(ui->radioALPHA, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
     connect(ui->radioMIP, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
+    connect(ui->radioAverage, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
 
 
 }
@@ -93,5 +94,24 @@ void MainWindow::closeAction()
 
 void MainWindow::setCompositing()
 {
-    glWidget->setAlphaCompositing(ui->radioALPHA->isChecked());
+    if (ui->radioMIP->isChecked())
+    {
+        glWidget->setTechnique(GLWidget::techniques::MIP);
+    }
+
+    else if (ui->radioALPHA->isChecked())
+    {
+        glWidget->setTechnique(GLWidget::techniques::ALPHA);
+    }
+
+    else if (ui->radioAverage->isChecked())
+    {
+        glWidget->setTechnique(GLWidget::techniques::AVERAGE);
+    }
+
+    else
+    {
+        glWidget->setTechnique(GLWidget::techniques::MIP);
+    }
+
 }

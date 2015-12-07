@@ -14,7 +14,8 @@ uniform int numSamples;
 uniform float sampleRangeStart;
 uniform float sampleRangeEnd;
 uniform vec2 screenDimensions;
-uniform bool alphaCompositing;
+uniform bool alphaTech;
+uniform bool avgTech;
 
 void main()
 {
@@ -45,26 +46,30 @@ void main()
             intensity = texture3D(volume, currentVoxel).r;
             //outColor = vec4(currentVoxel, 1);
 
-            if (!alphaCompositing) { // MAXIMUM INTENSITY PROJECTION
+            if (!alphaTech && !avgTech) { // MAXIMUM INTENSITY PROJECTION
 
                 if (intensity > maxIntensity) {
                     maxIntensity = intensity;
                 }
 
-            } else { // TODO ALPHA COMPOSITING (SWITCH BETWEEN MODES VIA UNIFORM INT)
+            } else if (alphaTech && !avgTech) { // ALPHA COMPOSITING (
 
                 mappedColor = texture1D(transferFunction, intensity);
 
                 // front-to-back integration
                 if (mappedColor.a > 0.0) {
-                    mappedColor.a = 1.0 - pow(1.0 - mappedColor.a, sampleStepSize*200.0f);
+                    mappedColor.a = 1.0 - pow(1.0 - mappedColor.a, sampleStepSize*numSamples);
                     colorAccum.rgb += (1.0 - colorAccum.a) * mappedColor.rgb * mappedColor.a;
                     colorAccum.a += (1.0 - colorAccum.a) * mappedColor.a;
                 }
-                else if (colorAccum.a > 1.0) {
-                    colorAccum.a = 1.0;
+
+                if (colorAccum.a > 1.0) {
+                    colorAccum.a = 0.0;
                     break; // terminate if accumulated opacity > 1
                 }
+
+            } else if (!alphaTech && avgTech) { // TODO AVERAGE
+
             }
 
         }
@@ -72,12 +77,16 @@ void main()
         currentVoxel += rayDelta;
     }
 
-    if (true) { // MAXIMUM INTENSITY PROJECTION
+    if (!alphaTech && !avgTech) { // MAXIMUM INTENSITY PROJECTION
         /*/ <-- toggle
         outColor = texture1D(transferFunction, maxIntensity); /*/
         outColor = vec4(vec3(maxIntensity), 1.0); //*/
-    } else { // TODO ALPHA COMPOSITING (SWITCH BETWEEN MODES VIA UNIFORM INT)
+
+    } else if (alphaTech && !avgTech){  // ALPHA COMPOSITING
         outColor = colorAccum;
+
+    } else if (!alphaTech && avgTech) { // TODO AVERAGE
+
     }
 
     // DEBUG DRAW FRONT FACES (RAY ENTRY POSITIONS) / BACK FACES (RAY EXIT POSITIONS

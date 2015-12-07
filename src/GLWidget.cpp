@@ -176,9 +176,20 @@ void GLWidget::paintGL()
 	raycastShader->setUniformValue("numSamples", numSamples);
 	raycastShader->setUniformValue("sampleRangeStart", sampleRangeStart);
 	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
-	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
-    raycastShader->setUniformValue("alphaCompositing", alphaCompositing); //by default false -> use MIP
-	transferFunction1DTex->bind(0); // bind texture to texture unit 0
+    if (technique == techniques::MIP) {
+        raycastShader->setUniformValue("alphaTech", false);
+        raycastShader->setUniformValue("avgTech", false);
+    } else if (technique == techniques::ALPHA) {
+        raycastShader->setUniformValue("alphaTech", true);
+        raycastShader->setUniformValue("avgTech", false);
+    } else if (technique == techniques::AVERAGE) {
+        raycastShader->setUniformValue("alphaTech", false);
+        raycastShader->setUniformValue("avgTech", true);
+    }
+    raycastShader->setUniformValue("alphaTech", technique);
+    glActiveTexture(GL_TEXTURE0);
+    transferFunction1DTex->bind(0); // bind texture to texture unit 0
+    raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
 	raycastShader->setUniformValue("exitPositions", 1);
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, rayVolumeExitPosMapFramebuffer->texture());
@@ -256,9 +267,9 @@ void GLWidget::setSampleRangeEnd(double sampleRangeEnd)
 	repaint();
 }
 
-void GLWidget::setAlphaCompositing(bool use)
+void GLWidget::setTechnique(techniques t)
 {
-    this->alphaCompositing = use;
+    this->technique = t;
     repaint();
 }
 

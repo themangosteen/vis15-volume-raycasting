@@ -94,7 +94,7 @@
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
-           <string>Compostiting</string>
+           <string>Technique</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
@@ -116,6 +116,13 @@
               <widget class="QRadioButton" name="radioALPHA">
                <property name="text">
                 <string>Alpha Comp.</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioAverage">
+               <property name="text">
+                <string>Average</string>
                </property>
               </widget>
              </item>

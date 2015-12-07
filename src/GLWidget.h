@@ -24,6 +24,7 @@ public:
 		mainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent());
 	}
 	~GLWidget();
+    enum techniques {MIP=0, ALPHA=1, AVERAGE=2 };
 
 public slots:
 	void dataLoaded(Volume *volume);
@@ -31,7 +32,7 @@ public slots:
 	void setNumSamples(int numSamples);
 	void setSampleRangeStart(double sampleRangeStart);
 	void setSampleRangeEnd(double sampleRangeEnd);
-    void setAlphaCompositing(bool use);
+    void setTechnique(techniques t);
 
 protected:
 
@@ -112,7 +113,7 @@ private:
 	int numSamples = 200;
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
-    bool alphaCompositing = false;
+    techniques technique = techniques::MIP;
 
 
 };
