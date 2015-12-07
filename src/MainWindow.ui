@@ -295,7 +295,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>placeholder monkey ^o.o^ meow :)</string>
+         <string>ROTATE: left mouse, PAN: ctrl + left mouse, ZOOM: alt + left mouse</string>
         </property>
        </widget>
       </item>

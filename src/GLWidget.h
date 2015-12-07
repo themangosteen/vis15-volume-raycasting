@@ -36,9 +36,11 @@ protected:
 
 	void initializeGL();
 
-	void resizeGL(int w, int h);
-
 	void paintGL();
+
+	void resizeGL(int w, int h);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 
 private:
 
@@ -111,6 +113,12 @@ private:
 	int numSamples = 200;
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
+
+	QPoint lastMousePos;
+	float volumeRotAngleX;
+	float volumeRotAngleY;
+	float volumeRotAngleZ;
+	QVector3D viewOffset;
 
 
 };
