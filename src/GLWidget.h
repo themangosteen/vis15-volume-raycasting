@@ -1,6 +1,8 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include <QFileDialog>
+
 #include <QOpenGLWidget>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions_3_3_Core>
@@ -31,6 +33,7 @@ public slots:
 	void setNumSamples(int numSamples);
 	void setSampleRangeStart(double sampleRangeStart);
 	void setSampleRangeEnd(double sampleRangeEnd);
+	void loadTransferFunctionImage();
 
 protected:
 
@@ -46,7 +49,7 @@ private:
 
 	void initShaders();
 
-	void loadTransferFunction1DTex();
+	void loadTransferFunction1DTex(const QString &fileName);
 	void initRayVolumeExitPosMapFramebuffer();
 	void loadVolume3DTex();
 

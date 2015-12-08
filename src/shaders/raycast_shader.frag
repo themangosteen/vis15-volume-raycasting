@@ -72,7 +72,7 @@ void main()
     }
 
     if (true) { // MAXIMUM INTENSITY PROJECTION
-        /*/ <-- toggle
+        // <-- toggle
         outColor = texture1D(transferFunction, maxIntensity); /*/
         outColor = vec4(vec3(maxIntensity), 1.0); //*/
     } else { // TODO ALPHA COMPOSITING (SWITCH BETWEEN MODES VIA UNIFORM INT)

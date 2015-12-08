@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->numSamplesSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), glWidget, &GLWidget::setNumSamples);
 	connect(ui->sampleStartSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeStart);
 	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
+	connect(ui->loadTffImageButton, &QPushButton::clicked, glWidget, &GLWidget::loadTransferFunctionImage);
+
 
 
 }
@@ -88,3 +90,4 @@ void MainWindow::closeAction()
 {
 	close();
 }
+

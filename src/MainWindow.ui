@@ -269,7 +269,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="loadTffImageButton">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -345,7 +345,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>pushButton</tabstop>
+  <tabstop>loadTffImageButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>
