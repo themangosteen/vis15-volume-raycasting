@@ -180,7 +180,7 @@
              <number>9999</number>
             </property>
             <property name="singleStep">
-             <number>10</number>
+             <number>25</number>
             </property>
             <property name="value">
              <number>200</number>
@@ -241,7 +241,7 @@
              <double>1.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.001000000000000</double>
+             <double>0.010000000000000</double>
             </property>
            </widget>
           </item>
@@ -299,7 +299,7 @@
              <double>1.000000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.001000000000000</double>
+             <double>0.010000000000000</double>
             </property>
             <property name="value">
              <double>1.000000000000000</double>

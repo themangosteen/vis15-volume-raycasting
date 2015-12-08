@@ -188,7 +188,6 @@ void GLWidget::paintGL()
         raycastShader->setUniformValue("alphaTech", false);
         raycastShader->setUniformValue("avgTech", true);
     }
-    raycastShader->setUniformValue("alphaTech", technique);
     glActiveTexture(GL_TEXTURE0);
     transferFunction1DTex->bind(0); // bind texture to texture unit 0
     raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
