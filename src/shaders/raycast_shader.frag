@@ -77,8 +77,13 @@ void main()
         currentVoxel += rayDelta;
     }
 
+<<<<<<< HEAD
     if (!alphaTech && !avgTech) { // MAXIMUM INTENSITY PROJECTION
         /*/ <-- toggle
+=======
+    if (true) { // MAXIMUM INTENSITY PROJECTION
+        // <-- toggle
+>>>>>>> ce85be3a89d20dd9890796aed145adb3d16a1b42
         outColor = texture1D(transferFunction, maxIntensity); /*/
         outColor = vec4(vec3(maxIntensity), 1.0); //*/
 

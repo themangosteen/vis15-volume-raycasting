@@ -12,6 +12,7 @@
 #include <QProgressBar>
 #include <QStatusBar>
 #include <QVariant>
+#include <QMouseEvent>
 
 
 class MainWindow : public QMainWindow
@@ -24,6 +25,7 @@ public:
 	~MainWindow();
 
 signals:
+
 	void dataLoaded(Volume *volumeData);
 
 protected slots :
@@ -31,7 +33,6 @@ protected slots :
 	void openFileAction();
 	void closeAction();
     void setCompositing();
-
 
 private:
 

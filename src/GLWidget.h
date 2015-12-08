@@ -1,6 +1,8 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include <QFileDialog>
+
 #include <QOpenGLWidget>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLFunctions_3_3_Core>
@@ -33,20 +35,23 @@ public slots:
 	void setSampleRangeStart(double sampleRangeStart);
 	void setSampleRangeEnd(double sampleRangeEnd);
     void setTechnique(techniques t);
+	void loadTransferFunctionImage();
 
 protected:
 
 	void initializeGL();
 
-	void resizeGL(int w, int h);
-
 	void paintGL();
+
+	void resizeGL(int w, int h);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
 
 private:
 
 	void initShaders();
 
-	void loadTransferFunction1DTex();
+	void loadTransferFunction1DTex(const QString &fileName);
 	void initRayVolumeExitPosMapFramebuffer();
 	void loadVolume3DTex();
 
@@ -114,6 +119,12 @@ private:
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
     techniques technique = techniques::MIP;
+
+	QPoint lastMousePos;
+	float volumeRotAngleX;
+	float volumeRotAngleY;
+	float volumeRotAngleZ;
+	QVector3D viewOffset;
 
 
 };

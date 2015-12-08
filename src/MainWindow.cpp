@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->radioALPHA, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
     connect(ui->radioMIP, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
     connect(ui->radioAverage, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
+	connect(ui->loadTffImageButton, &QPushButton::clicked, glWidget, &GLWidget::loadTransferFunctionImage);
 
 
 }
@@ -115,3 +116,4 @@ void MainWindow::setCompositing()
     }
 
 }
+

@@ -309,7 +309,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="loadTffImageButton">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -335,7 +335,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>placeholder monkey ^o.o^ meow :)</string>
+         <string>ROTATE: left mouse, PAN: ctrl + left mouse, ZOOM: alt + left mouse</string>
         </property>
        </widget>
       </item>
@@ -385,7 +385,7 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>pushButton</tabstop>
+  <tabstop>loadTffImageButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>
