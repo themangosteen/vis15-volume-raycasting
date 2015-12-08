@@ -284,11 +284,13 @@ void GLWidget::loadTransferFunctionImage()
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    this->tmpNumSamples = this->numSamples > 5 ? this->numSamples : this->tmpNumSamples;
 	lastMousePos = event->pos();
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
+    this->numSamples = 5; // SET SAMPLES LOWER FOR BETTER PERFORMANCE; RESET AFTER MOUSE RELEASE
 	int dx = event->x() - lastMousePos.x();
 	int dy = event->y() - lastMousePos.y();
 
@@ -315,6 +317,12 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 	lastMousePos = event->pos();
 
 	repaint();
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *)
+{
+    this->numSamples = this->tmpNumSamples;
+    repaint();
 }
 
 GLWidget::~GLWidget()

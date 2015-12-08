@@ -46,6 +46,7 @@ protected:
 	void resizeGL(int w, int h);
 	void mousePressEvent(QMouseEvent *event);
 	void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
 
@@ -116,6 +117,7 @@ private:
 
 	QColor backgroundColor;
 	int numSamples = 200;
+    int tmpNumSamples = 0;
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
     techniques technique = techniques::MIP;
