@@ -60,22 +60,13 @@ void main()
 
                 // front-to-back integration
                 if (mappedColor.a > 0.0) {
-
-                    /*
-                    mappedColor.a = 1.0 - pow(1.0 - mappedColor.a, sampleStepSize*200);
+                    mappedColor.a = 1.0 - pow(1.0 - mappedColor.a, sampleStepSize*numSamples);// orig. instead of numSamples was 200 -> which one is correct?
                     colorAccum.rgb += (1.0 - colorAccum.a) * mappedColor.rgb * mappedColor.a;
                     colorAccum.a += (1.0 - colorAccum.a) * mappedColor.a;
-                    */
-                    float alpha_c = mappedColor.a + (1.0-mappedColor.a)*colorAccum.a;
-                    vec3 color = 1.0/alpha_c * (mappedColor.a*mappedColor.rgb + (1-mappedColor.a)*colorAccum.a*colorAccum.rgb);
-                    colorAccum.r = color.r;
-                    colorAccum.g = color.g;
-                    colorAccum.b = color.b;
-                    colorAccum.a = alpha_c;
                 }
 
                 if (colorAccum.a > 1.0) {
-                    colorAccum.a = 0.0;
+                    colorAccum.a = 1.0;
                     break; // terminate if accumulated opacity > 1
                 }
 
