@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->radioMIP, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
     connect(ui->radioAverage, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
 	connect(ui->loadTffImageButton, &QPushButton::clicked, glWidget, &GLWidget::loadTransferFunctionImage);
+    connect(ui->shadedCheckBox, SIGNAL(clicked(bool)), this, SLOT(setShading()));
 
 
 }
@@ -104,6 +105,10 @@ void MainWindow::setCompositing()
 	} else {
         glWidget->setCompositingMethod(GLWidget::CompositingMethod::MIP);
     }
+}
 
+void MainWindow::setShading()
+{
+    glWidget->setShading(ui->shadedCheckBox->isChecked());
 }
 

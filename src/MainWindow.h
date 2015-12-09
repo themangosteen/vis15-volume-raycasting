@@ -33,6 +33,7 @@ protected slots :
 	void openFileAction();
 	void closeAction();
     void setCompositing();
+    void setShading();
 
 private:
 

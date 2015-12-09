@@ -225,6 +225,7 @@ void GLWidget::paintGL()
 	raycastShader->setUniformValue("sampleRangeStart", sampleRangeStart);
 	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
 	raycastShader->setUniformValue("compositingMethod", compositingMethod);
+    raycastShader->setUniformValue("shade", shade);
 
 	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
     transferFunction1DTex->bind(0); // bind texture to texture unit 0
@@ -319,6 +320,12 @@ void GLWidget::loadTransferFunctionImage()
 	loadTransferFunction1DTex(fileName);
 
 	repaint();
+}
+
+void GLWidget::setShading(bool shade)
+{
+    this->shade = shade;
+    repaint();
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

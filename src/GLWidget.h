@@ -41,6 +41,7 @@ public slots:
 	void setSampleRangeEnd(double sampleRangeEnd);
 	void setCompositingMethod(CompositingMethod m);
 	void loadTransferFunctionImage();
+    void setShading(bool shade);
 
 protected:
 
@@ -129,6 +130,7 @@ private:
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
 	CompositingMethod compositingMethod = CompositingMethod::MIP;
+    bool shade = false;
 
 	QPoint lastMousePos;
 	float volumeRotAngleX;
