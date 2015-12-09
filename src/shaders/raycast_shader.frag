@@ -42,8 +42,6 @@ void main()
     float intensityCount = 0.0;
     vec4  mappedColor; // color mapped to intensity by transferFunction
     vec4  colorAccum = vec4(0.0); // accumulated color from volume traversal
-    float alphaAccum = 0.0; // accumulated alpha for blending
-    bool  hit = false;
 
     vec4 backgroundColor = vec4(1.0, 1.0, 1.0, 0.0);
 
@@ -68,13 +66,9 @@ void main()
             } else if (compositingMethod == 2) { // ALPHA COMPOSITING (
 
                 mappedColor = texture1D(transferFunction, intensity);
+                mappedColor.a = intensity;
 
-                // front-to-back integration
-                if (mappedColor.a > 0.0) {
-                    mappedColor.a = 1.0 - pow(1.0 - mappedColor.a, sampleStepSize*numSamples);// orig. instead of numSamples was 200 -> which one is correct?
-                    colorAccum.rgb += (1.0 - colorAccum.a) * mappedColor.rgb * mappedColor.a;
-                    colorAccum.a += (1.0 - colorAccum.a) * mappedColor.a;
-                }
+                colorAccum += mappedColor * mappedColor.a * (1 - colorAccum.a);
 
                 if (colorAccum.a > 1.0) {
                     colorAccum.a = 1.0;
