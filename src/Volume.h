@@ -73,6 +73,7 @@ public:
 
 	const Voxel& getVoxel(const int i) const;
 	const Voxel& getVoxel(const int x, const int y, const int z) const;
+	float valueAt(const int x, const int y, const int z) const;
 	const Voxel* getVoxels() const;
 
 	const int getWidth() const;
@@ -82,7 +83,6 @@ public:
 	const int getSize() const;
 
 	bool loadFromFile(QString filename, QProgressBar* progressBar);
-
 
 private:
 

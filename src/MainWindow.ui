@@ -94,9 +94,24 @@
         <item>
          <widget class="QGroupBox" name="groupBox">
           <property name="title">
-           <string>Technique</string>
+           <string>Compositing Method</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>9</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
+            <number>9</number>
+           </property>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
@@ -105,17 +120,10 @@
                 <bool>true</bool>
                </property>
                <property name="text">
-                <string>MIP</string>
+                <string>Maximum </string>
                </property>
                <property name="checked">
                 <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioALPHA">
-               <property name="text">
-                <string>Alpha Comp.</string>
                </property>
               </widget>
              </item>
@@ -126,7 +134,21 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QRadioButton" name="radioAlpha">
+               <property name="text">
+                <string>Alpha Compositing</string>
+               </property>
+              </widget>
+             </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="shadedCheckBox">
+             <property name="text">
+              <string>Shaded</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -349,7 +371,7 @@
      <x>0</x>
      <y>0</y>
      <width>739</width>
-     <height>28</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

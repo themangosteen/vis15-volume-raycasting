@@ -26,7 +26,12 @@ public:
 		mainWindow = qobject_cast<MainWindow *>(this->parent()->parent()->parent());
 	}
 	~GLWidget();
-    enum techniques {MIP=0, ALPHA=1, AVERAGE=2 };
+
+	enum CompositingMethod {
+		MIP        = 0,
+		AVERAGE    = 1,
+		ALPHA      = 2
+	};
 
 public slots:
 	void dataLoaded(Volume *volume);
@@ -34,7 +39,7 @@ public slots:
 	void setNumSamples(int numSamples);
 	void setSampleRangeStart(double sampleRangeStart);
 	void setSampleRangeEnd(double sampleRangeEnd);
-    void setTechnique(techniques t);
+	void setCompositingMethod(CompositingMethod m);
 	void loadTransferFunctionImage();
 
 protected:
@@ -55,6 +60,7 @@ private:
 	void loadTransferFunction1DTex(const QString &fileName);
 	void initRayVolumeExitPosMapFramebuffer();
 	void loadVolume3DTex();
+	void precomputeGradients3DTex();
 
 	void initVolumeBBoxCubeVBO();
 	void drawVolumeBBoxCube(GLenum glFaceCullingMode, QOpenGLShaderProgram *shader);
@@ -72,8 +78,10 @@ private:
 	QOpenGLTexture *transferFunction1DTex;
 	QOpenGLFramebufferObject *rayVolumeExitPosMapFramebuffer;
 	QOpenGLTexture *volume3DTex;
+	QOpenGLTexture *gradients3DTex;
 
 	Volume *volume;
+	std::vector<QVector3D> gradients;
 
 	QOpenGLVertexArrayObject volumeBBoxCubeVAO;
 
@@ -120,14 +128,13 @@ private:
     int tmpNumSamples = 0;
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
-    techniques technique = techniques::MIP;
+	CompositingMethod compositingMethod = CompositingMethod::MIP;
 
 	QPoint lastMousePos;
 	float volumeRotAngleX;
 	float volumeRotAngleY;
 	float volumeRotAngleZ;
 	QVector3D viewOffset;
-
 
 };
 

@@ -10,12 +10,17 @@ out vec4 outColor;
 uniform sampler1D transferFunction; // maps sampled intensities to color
 uniform sampler2D exitPositions; // precalculated exit positions for an orthogonal ray from each fragment
 uniform sampler3D volume;
-uniform int numSamples;
+uniform sampler3D gradients; // directions of greatest change at each voxel, used as normals for shading
+uniform int numSamples; // number of samples along each ray
 uniform float sampleRangeStart;
 uniform float sampleRangeEnd;
 uniform vec2 screenDimensions;
-uniform bool alphaTech;
-uniform bool avgTech;
+
+// COMPOSITING METHODS
+// 0: Maximum Intensity Projection
+// 1: Average Intensity Projection
+// 2: Alpha compositing
+uniform int compositingMethod;
 
 void main()
 {
@@ -34,11 +39,11 @@ void main()
     float intensity;
     float maxIntensity = 0.0;
     float intensityAccum = 0.0;
-    float  intensityCount = 0.0;
+    float intensityCount = 0.0;
     vec4  mappedColor; // color mapped to intensity by transferFunction
-    vec4 colorAccum = vec4(0.0); // accumulated color from volume traversal
+    vec4  colorAccum = vec4(0.0); // accumulated color from volume traversal
     float alphaAccum = 0.0; // accumulated alpha for blending
-    bool hit = false;
+    bool  hit = false;
 
     vec4 backgroundColor = vec4(1.0, 1.0, 1.0, 0.0);
 
@@ -48,13 +53,19 @@ void main()
 
             intensity = texture3D(volume, currentVoxel).r;
 
-            if (!alphaTech && !avgTech) { // MAXIMUM INTENSITY PROJECTION
+            if (compositingMethod == 0) { // MAXIMUM INTENSITY PROJECTION
 
                 if (intensity > maxIntensity) {
                     maxIntensity = intensity;
                 }
 
-            } else if (alphaTech && !avgTech) { // ALPHA COMPOSITING (
+            } else if (compositingMethod == 1) { // AVERAGE INTENSITY PROJECTION
+                intensityAccum += intensity;
+                if (intensity > 0.0) {
+                    intensityCount += 1;
+                }
+
+            } else if (compositingMethod == 2) { // ALPHA COMPOSITING (
 
                 mappedColor = texture1D(transferFunction, intensity);
 
@@ -70,11 +81,6 @@ void main()
                     break; // terminate if accumulated opacity > 1
                 }
 
-            } else if (!alphaTech && avgTech) { // TODO AVERAGE
-                intensityAccum += intensity;
-                if (intensity > 0.0) {
-                    intensityCount += 1;
-                }
             }
 
         }
@@ -82,19 +88,19 @@ void main()
         currentVoxel += rayDelta;
     }
 
-    if (!alphaTech && !avgTech) { // MAXIMUM INTENSITY PROJECTION
+    if (compositingMethod == 0) { // MAXIMUM INTENSITY PROJECTION
         // <-- toggle
         outColor = texture1D(transferFunction, maxIntensity); /*/
         outColor = vec4(vec3(maxIntensity), 1.0); //*/
 
-    } else if (alphaTech && !avgTech){  // ALPHA COMPOSITING
-        outColor = colorAccum;
-
-    } else if (!alphaTech && avgTech) { // TODO AVERAGE
+    } else if (compositingMethod == 1) { // AVERAGE INTENSITY PROJECTION
         //float numSamplesFl = 1.0 * numSamples;
         float avgIntensity = intensityAccum / intensityCount;
         if (avgIntensity > 1.0) { avgIntensity = 1.0; }
         outColor = texture1D(transferFunction, avgIntensity);
+
+    } else if (compositingMethod == 2) {  // ALPHA COMPOSITING
+        outColor = colorAccum;
     }
 
     // DEBUG DRAW FRONT FACES (RAY ENTRY POSITIONS) / BACK FACES (RAY EXIT POSITIONS

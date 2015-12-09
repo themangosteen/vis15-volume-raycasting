@@ -114,9 +114,7 @@ void GLWidget::initRayVolumeExitPosMapFramebuffer()
 
 void GLWidget::loadVolume3DTex()
 {
-	if (volume == nullptr) {
-		return;
-	}
+	if (!volume) { return; }
 
 	// fill volumeData into a 3D texture
 	volume3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
@@ -133,11 +131,61 @@ void GLWidget::loadVolume3DTex()
 
 }
 
+void GLWidget::precomputeGradients3DTex()
+{
+	if (!volume) { return; }
+
+	gradients.clear();
+
+	// gradients at each voxel are calculated using the sobel filter.
+	// sobel filter kernels consist of an averaging and a difference kernel, i.e. compute the gradient with smoothing.
+	// for each direction d, the smoothingKernel is applied to d+1 and d-1 to average the values along the other directions,
+	// then difference of the two values is taken. here we do this for all 3 directions to build the gradient vector.
+
+	float smoothingKernel[9] = {  1, 2, 1, 2, 4, 2, 1, 2, 1 };
+	float offsets1[9]        = { -1,-1,-1, 0, 0, 0, 1, 1, 1 };
+	float offsets2[9]        = { -1, 0, 1,-1, 0, 1,-1, 0, 1 };
+
+	for (int x = 0; x < volume->getWidth(); ++x) {
+		for (int y = 0; y < volume->getHeight(); ++y) {
+			for (int z = 0; z < volume->getDepth(); ++z) {
+
+				float gradientX, gradientY, gradientZ;
+
+				for (int i = 0; i < 9; ++i) {
+					gradientX += volume->valueAt(x-1, y+offsets1[i], z+offsets2[i]) * smoothingKernel[i];
+					gradientX -= volume->valueAt(x+1, y+offsets1[i], z+offsets2[i]) * smoothingKernel[i];
+
+					gradientY += volume->valueAt(x+offsets1[i], y-1, z+offsets2[i]) * smoothingKernel[i];
+					gradientY -= volume->valueAt(x+offsets1[i], y+1, z+offsets2[i]) * smoothingKernel[i];
+
+					gradientZ += volume->valueAt(x+offsets1[i], y+offsets2[i], z-1) * smoothingKernel[i];
+					gradientZ -= volume->valueAt(x+offsets1[i], y+offsets2[i], z+1) * smoothingKernel[i];
+				}
+
+				gradients.push_back(QVector3D(gradientX, gradientY, gradientZ));
+			}
+		}
+	}
+
+	// fill gradients into a 3D texture
+	gradients3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
+	gradients3DTex->create();
+	gradients3DTex->setFormat(QOpenGLTexture::RGB32F);
+	gradients3DTex->setWrapMode(QOpenGLTexture::Repeat);
+	gradients3DTex->setMinificationFilter(QOpenGLTexture::Linear); // trilinear interpolation
+	gradients3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
+	gradients3DTex->bind();
+	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_RGB, GL_FLOAT, &gradients[0]);
+
+}
+
 void GLWidget::dataLoaded(Volume *volumeData)
 {
 	this->volume = volumeData;
 
 	loadVolume3DTex();
+	precomputeGradients3DTex();
 
 }
 
@@ -146,9 +194,7 @@ void GLWidget::paintGL()
 	glf->glClearColor(backgroundColor.red()/256.0f, backgroundColor.green()/256.0f, backgroundColor.blue()/256.0f, 1.0f);
 	glf->glClear(GL_COLOR_BUFFER_BIT);
 
-	if (!volume) {
-		return;
-	}
+	if (!volume) { return; }
 
 	glf->glEnable(GL_DEPTH_TEST);
 
@@ -178,24 +224,17 @@ void GLWidget::paintGL()
 	raycastShader->setUniformValue("numSamples", numSamples);
 	raycastShader->setUniformValue("sampleRangeStart", sampleRangeStart);
 	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
-    if (technique == techniques::MIP) {
-        raycastShader->setUniformValue("alphaTech", false);
-        raycastShader->setUniformValue("avgTech", false);
-    } else if (technique == techniques::ALPHA) {
-        raycastShader->setUniformValue("alphaTech", true);
-        raycastShader->setUniformValue("avgTech", false);
-    } else if (technique == techniques::AVERAGE) {
-        raycastShader->setUniformValue("alphaTech", false);
-        raycastShader->setUniformValue("avgTech", true);
-    }
-    glActiveTexture(GL_TEXTURE0);
+	raycastShader->setUniformValue("compositingMethod", compositingMethod);
+
+	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
     transferFunction1DTex->bind(0); // bind texture to texture unit 0
-    raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
 	raycastShader->setUniformValue("exitPositions", 1);
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, rayVolumeExitPosMapFramebuffer->texture());
 	raycastShader->setUniformValue("volume", 2);
 	volume3DTex->bind(2);
+	raycastShader->setUniformValue("gradients", 3);
+	gradients3DTex->bind(3);
 
 	// draw volume cube front faces (back face culling enabled)
 	// raycastShader then uses interpolated front face (ray entry) positions with exit positions from first pass
@@ -268,9 +307,9 @@ void GLWidget::setSampleRangeEnd(double sampleRangeEnd)
 	repaint();
 }
 
-void GLWidget::setTechnique(techniques t)
+void GLWidget::setCompositingMethod(CompositingMethod m)
 {
-    this->technique = t;
+	this->compositingMethod = m;
     repaint();
 }
 

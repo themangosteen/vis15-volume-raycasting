@@ -142,6 +142,14 @@ const Voxel& Volume::getVoxel(const int i) const
 	return voxels[i];
 }
 
+float Volume::valueAt(const int x, const int y, const int z) const
+{
+	if (x < 0 || x >= width || y < 0 || y >= height || z < 0 || z >= depth)
+		return 0;
+
+	return voxels[x + y*width + z*width*height].getValue();
+}
+
 const Voxel* Volume::getVoxels() const
 {
 	return &(voxels.front());

@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->numSamplesSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), glWidget, &GLWidget::setNumSamples);
 	connect(ui->sampleStartSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeStart);
 	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
-    connect(ui->radioALPHA, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
+	connect(ui->radioAlpha, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
     connect(ui->radioMIP, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
     connect(ui->radioAverage, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
 	connect(ui->loadTffImageButton, &QPushButton::clicked, glWidget, &GLWidget::loadTransferFunctionImage);
@@ -95,24 +95,14 @@ void MainWindow::closeAction()
 
 void MainWindow::setCompositing()
 {
-    if (ui->radioMIP->isChecked())
-    {
-        glWidget->setTechnique(GLWidget::techniques::MIP);
-    }
-
-    else if (ui->radioALPHA->isChecked())
-    {
-        glWidget->setTechnique(GLWidget::techniques::ALPHA);
-    }
-
-    else if (ui->radioAverage->isChecked())
-    {
-        glWidget->setTechnique(GLWidget::techniques::AVERAGE);
-    }
-
-    else
-    {
-        glWidget->setTechnique(GLWidget::techniques::MIP);
+	if (ui->radioMIP->isChecked())  {
+        glWidget->setCompositingMethod(GLWidget::CompositingMethod::MIP);
+	} else if (ui->radioAverage->isChecked()) {
+		glWidget->setCompositingMethod(GLWidget::CompositingMethod::AVERAGE);
+	} else if (ui->radioAlpha->isChecked()) {
+        glWidget->setCompositingMethod(GLWidget::CompositingMethod::ALPHA);
+	} else {
+        glWidget->setCompositingMethod(GLWidget::CompositingMethod::MIP);
     }
 
 }
