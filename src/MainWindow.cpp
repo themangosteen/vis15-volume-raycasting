@@ -21,11 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->numSamplesSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), glWidget, &GLWidget::setNumSamples);
 	connect(ui->sampleStartSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeStart);
 	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
-	connect(ui->radioAlpha, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
-    connect(ui->radioMIP, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
-    connect(ui->radioAverage, SIGNAL(clicked(bool)), this, SLOT(setCompositing()));
+	connect(ui->radioAlpha, &QRadioButton::clicked, this, &MainWindow::setCompositing);
+	connect(ui->radioMIP, &QRadioButton::clicked, this, &MainWindow::setCompositing);
+	connect(ui->radioAverage, &QRadioButton::clicked, this, &MainWindow::setCompositing);
 	connect(ui->loadTffImageButton, &QPushButton::clicked, glWidget, &GLWidget::loadTransferFunctionImage);
-    connect(ui->shadedCheckBox, SIGNAL(clicked(bool)), this, SLOT(setShading()));
+	connect(ui->shadedCheckBox, &QCheckBox::clicked, glWidget, &GLWidget::setShading);
 
 
 }

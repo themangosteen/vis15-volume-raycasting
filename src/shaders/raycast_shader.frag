@@ -21,7 +21,7 @@ uniform vec2 screenDimensions;
 // 1: Average Intensity Projection
 // 2: Alpha compositing
 uniform int compositingMethod;
-uniform bool shade;
+uniform bool enableShading;
 
 void main()
 {
@@ -38,16 +38,14 @@ void main()
     vec3  currentVoxel = entryPos;
 
     // Shading
-    vec3  normal = vec3(0.0);
+    vec3  normal = vec3(0);
     vec3  view = normalize(ray);
-    vec3  firstPoint;
+    vec3  firstHitPos;
 
-    vec3 lightPos = vec3(0.0) - 20.0*view;;
+    vec3 lightPos = vec3(5, 5, 5);
     vec3 lightAmb = vec3(0.3, 0.3, 0.3);
     vec3 lightDif = vec3(0.7, 0.7, 0.7);
     vec3 lightSpec = vec3(1.0, 1.0, 1.0);
-
-
 
     float intensity;
     float maxIntensity = 0.0;
@@ -60,12 +58,13 @@ void main()
 
     for (int i = 0; i < numSamples; ++i) {
 
-        if (i >= sampleRangeStart*numSamples && i <= sampleRangeEnd*numSamples) {
+        if (i >= sampleRangeStart * numSamples && i <= sampleRangeEnd * numSamples) {
 
             intensity = texture3D(volume, currentVoxel).r;
-            if (intensity > 0.3 && length(normal) != 1 ) {
+
+            if (normal == vec3(0) && intensity > 0.3) {
                 normal = normalize(texture3D(gradients, currentVoxel).rgb);
-                firstPoint = vec3(currentVoxel.r, currentVoxel.g, currentVoxel.b);
+                firstHitPos = currentVoxel;
             }
 
             if (compositingMethod == 0) { // MAXIMUM INTENSITY PROJECTION
@@ -91,7 +90,6 @@ void main()
                     colorAccum.a = 1.0;
                     break; // terminate if accumulated opacity > 1
                 }
-
             }
 
         }
@@ -114,23 +112,20 @@ void main()
         outColor = colorAccum;
     }
 
-
-    // BLINN PHONG
-    if (shade) {
-        vec3 materialColor = vec3(outColor.r, outColor.g, outColor.b);
-        float materialAlpha = outColor.a;
-        vec3 lightDir = normalize(lightPos - firstPoint);
-        vec3 ambient = lightAmb * materialColor;
-        vec3 diffuse = max(dot(normal, lightDir), 0.0f) * materialColor * lightDif;
+    // BLINN PHONG ILLUMINATION MODEL
+    if (enableShading) {
+        vec3  surfaceColor = outColor.rgb;
+        float surfaceAlpha = outColor.a;
+        vec3  lightDir = normalize(lightPos - firstHitPos);
+        vec3  ambient = lightAmb * surfaceColor;
+        vec3  diffuse = max(dot(normal, lightDir), 0.0f) * surfaceColor * lightDif;
         float shininess = 0.05;
 
         vec3 halfVec = normalize(lightDir + view); // half vector of light and view vectors
         vec3 specular = pow(max(dot(halfVec, normal), 0.0f), shininess) * lightSpec * lightSpec;
 
-        outColor = vec4(vec3(ambient + diffuse + specular), materialAlpha);
+        outColor = vec4(normal, 1); //vec3(ambient + diffuse + specular), surfaceAlpha);
     }
-
-
 
     // DEBUG DRAW FRONT FACES (RAY ENTRY POSITIONS) / BACK FACES (RAY EXIT POSITIONS
     //outColor = vec4(entryPos, 1.0);

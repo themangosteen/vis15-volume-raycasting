@@ -164,6 +164,7 @@ void GLWidget::precomputeGradients3DTex()
 				}
 
 				gradients.push_back(QVector3D(gradientX, gradientY, gradientZ));
+
 			}
 		}
 	}
@@ -171,18 +172,17 @@ void GLWidget::precomputeGradients3DTex()
 	// fill gradients into a 3D texture
 	gradients3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
 	gradients3DTex->create();
-	gradients3DTex->setFormat(QOpenGLTexture::RGB32F);
 	gradients3DTex->setWrapMode(QOpenGLTexture::Repeat);
 	gradients3DTex->setMinificationFilter(QOpenGLTexture::Linear); // trilinear interpolation
 	gradients3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
 	gradients3DTex->bind();
-	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_RGB, GL_FLOAT, &gradients[0]);
+	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_RGB32F, GL_FLOAT, &gradients[0]);
 
 }
 
 void GLWidget::dataLoaded(Volume *volumeData)
 {
-	this->volume = volumeData;
+	volume = volumeData;
 
 	loadVolume3DTex();
 	precomputeGradients3DTex();
@@ -225,7 +225,7 @@ void GLWidget::paintGL()
 	raycastShader->setUniformValue("sampleRangeStart", sampleRangeStart);
 	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
 	raycastShader->setUniformValue("compositingMethod", compositingMethod);
-    raycastShader->setUniformValue("shade", shade);
+	raycastShader->setUniformValue("enableShading", enableShading);
 
 	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
     transferFunction1DTex->bind(0); // bind texture to texture unit 0
@@ -324,7 +324,7 @@ void GLWidget::loadTransferFunctionImage()
 
 void GLWidget::setShading(bool shade)
 {
-    this->shade = shade;
+	this->enableShading = shade;
     repaint();
 }
 
