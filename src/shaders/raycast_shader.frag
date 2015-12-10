@@ -14,6 +14,7 @@ uniform sampler3D volume;
 uniform int numSamples; // number of samples along each ray
 uniform float sampleRangeStart;
 uniform float sampleRangeEnd;
+uniform float shadingThreshold;
 uniform vec2 screenDimensions;
 
 // COMPOSITING METHODS
@@ -47,7 +48,7 @@ void main()
     vec3 lightDif = vec3(0.7);
     vec3 lightSpec = vec3(0.6);
 
-    float intensity;
+    float intensity = 0.0;
     float maxIntensity = 0.0;
     float intensityAccum = 0.0;
     float intensityCount = 0.0;
@@ -62,7 +63,7 @@ void main()
 
             intensity = texture3D(volume, currentVoxel).r;
 
-            if (firstHitPos == vec3(0) && intensity > 0.3) {
+            if (firstHitPos == vec3(0) && intensity > shadingThreshold) {
                 //normal = normalize(texture3D(gradients, currentVoxel).rgb);
                 firstHitPos = currentVoxel;
             }

@@ -187,6 +187,7 @@ void GLWidget::dataLoaded(Volume *volumeData)
 	volume = volumeData;
 
 	loadVolume3DTex();
+    repaint();
 	//precomputeGradients3DTex();
 
 }
@@ -228,6 +229,7 @@ void GLWidget::paintGL()
 	raycastShader->setUniformValue("sampleRangeEnd", sampleRangeEnd);
 	raycastShader->setUniformValue("compositingMethod", compositingMethod);
 	raycastShader->setUniformValue("enableShading", enableShading);
+    raycastShader->setUniformValue("shadingThreshold", shadingThreshold);
 
 	raycastShader->setUniformValue("transferFunction", 0); // bind shader uniform to texture unit 0
     transferFunction1DTex->bind(0); // bind texture to texture unit 0
@@ -266,7 +268,7 @@ void GLWidget::drawVolumeBBoxCube(GLenum glFaceCullMode, QOpenGLShaderProgram *s
 	modelMat = rotMatY * modelMat;
 	modelMat.translate(QVector3D(-0.5, -0.5, -0.5)); // move volume bounding box cube to center
 	viewMat.setToIdentity();
-	viewMat.lookAt(QVector3D(0.0f, 0.0f, viewOffset.z()), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f)); // move camera slightly back and look at center
+    viewMat.lookAt(QVector3D(0.0f, 0.0f, viewOffset.z()), QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f)); // move camera slightly back and look at center
 	viewMat.translate(viewOffset.x(), viewOffset.y(), 0.0f);
 	projMat.setToIdentity();
 	projMat.perspective(60, this->width()/this->height(), 0.01f, 1000.f);
@@ -308,6 +310,12 @@ void GLWidget::setSampleRangeEnd(double sampleRangeEnd)
 {
 	this->sampleRangeEnd = float(sampleRangeEnd);
 	repaint();
+}
+
+void GLWidget::setShadingThreshold(double thresh)
+{
+    this->shadingThreshold = thresh;
+    repaint();
 }
 
 void GLWidget::setCompositingMethod(CompositingMethod m)

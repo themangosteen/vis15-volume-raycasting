@@ -42,6 +42,7 @@ public slots:
 	void setCompositingMethod(CompositingMethod m);
 	void loadTransferFunctionImage();
 	void setShading(bool enableShading);
+    void setShadingThreshold(double thresh);
 
 protected:
 
@@ -129,6 +130,7 @@ private:
     int tmpNumSamples = 0;
 	float sampleRangeStart = 0.000f;
 	float sampleRangeEnd = 1.000f;
+    float shadingThreshold = 0.0;
 	CompositingMethod compositingMethod = CompositingMethod::MIP;
 	bool enableShading = false;
 

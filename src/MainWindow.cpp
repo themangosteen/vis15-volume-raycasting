@@ -21,12 +21,12 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(ui->numSamplesSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), glWidget, &GLWidget::setNumSamples);
 	connect(ui->sampleStartSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeStart);
 	connect(ui->sampleEndSpinBox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setSampleRangeEnd);
+    connect(ui->shadingThresholdSpinbox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), glWidget, &GLWidget::setShadingThreshold);
 	connect(ui->radioAlpha, &QRadioButton::clicked, this, &MainWindow::setCompositing);
 	connect(ui->radioMIP, &QRadioButton::clicked, this, &MainWindow::setCompositing);
 	connect(ui->radioAverage, &QRadioButton::clicked, this, &MainWindow::setCompositing);
 	connect(ui->loadTffImageButton, &QPushButton::clicked, glWidget, &GLWidget::loadTransferFunctionImage);
 	connect(ui->shadedCheckBox, &QCheckBox::clicked, glWidget, &GLWidget::setShading);
-
 
 }
 
