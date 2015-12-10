@@ -117,6 +117,9 @@ void GLWidget::loadVolume3DTex()
 	if (!volume) { return; }
 
 	// fill volumeData into a 3D texture
+	if (volume3DTex) {
+		volume3DTex->destroy(); delete volume3DTex; volume3DTex = nullptr;
+	}
 	volume3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
 	volume3DTex->create();
 	volume3DTex->setFormat(QOpenGLTexture::R32F);
@@ -170,6 +173,9 @@ void GLWidget::precomputeGradients3DTex()
 	}
 
 	// fill gradients into a 3D texture
+	if (gradients3DTex) {
+		gradients3DTex->destroy(); delete gradients3DTex; gradients3DTex = nullptr;
+	}
 	gradients3DTex = new QOpenGLTexture(QOpenGLTexture::Target3D);
 	gradients3DTex->create();
 	gradients3DTex->setWrapMode(QOpenGLTexture::Repeat);
