@@ -39,13 +39,13 @@ void main()
 
     // Shading
     vec3  normal = vec3(0);
-    vec3  view = normalize(ray);
-    vec3  firstHitPos;
+    vec3  view = vec3(0, 0, 10);
+    vec3  firstHitPos = vec3(0);
 
     vec3 lightPos = vec3(5, 5, 5);
-    vec3 lightAmb = vec3(0.3, 0.3, 0.3);
-    vec3 lightDif = vec3(0.7, 0.7, 0.7);
-    vec3 lightSpec = vec3(1.0, 1.0, 1.0);
+    vec3 lightAmb = vec3(0.4);
+    vec3 lightDif = vec3(0.7);
+    vec3 lightSpec = vec3(0.6);
 
     float intensity;
     float maxIntensity = 0.0;
@@ -62,7 +62,7 @@ void main()
 
             intensity = texture3D(volume, currentVoxel).r;
 
-            if (normal == vec3(0) && intensity > 0.3) {
+            if (firstHitPos == vec3(0) && intensity > 0.3) {
                 //normal = normalize(texture3D(gradients, currentVoxel).rgb);
                 firstHitPos = currentVoxel;
             }
@@ -123,11 +123,11 @@ void main()
         float surfaceAlpha = outColor.a;
         vec3  lightDir = normalize(lightPos - firstHitPos);
         vec3  ambient = lightAmb * surfaceColor;
-        vec3  diffuse = max(dot(normal, lightDir), 0.0f) * surfaceColor * lightDif;
-        float shininess = 0.05;
+        vec3  diffuse = max(dot(normal, lightDir), 0.0f) * surfaceColor;
+        float shininess = 3.f;
 
         vec3 halfVec = normalize(lightDir + view); // half vector of light and view vectors
-        vec3 specular = pow(max(dot(halfVec, normal), 0.0f), shininess) * lightSpec * lightSpec;
+        vec3 specular = pow(max(dot(halfVec, normal), 0.0f), shininess) * lightSpec;
 
         outColor = vec4(vec3(ambient + diffuse + specular), surfaceAlpha);
     }
