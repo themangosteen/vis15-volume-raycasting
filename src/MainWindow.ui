@@ -178,7 +178,7 @@
                 </font>
                </property>
                <property name="accelerated">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
                <property name="correctionMode">
                 <enum>QAbstractSpinBox::CorrectToNearestValue</enum>
@@ -194,6 +194,9 @@
                </property>
                <property name="singleStep">
                 <double>0.010000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.150000000000000</double>
                </property>
               </widget>
              </item>
@@ -429,7 +432,7 @@
      <x>0</x>
      <y>0</y>
      <width>739</width>
-     <height>28</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
