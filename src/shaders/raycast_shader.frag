@@ -105,6 +105,7 @@ void main()
 
     } else if (compositingMethod == 1) { // AVERAGE INTENSITY PROJECTION
         //float numSamplesFl = 1.0 * numSamples;
+        intensityCount = intensityCount > 0.0 ? intensityCount : numSamples;
         float avgIntensity = intensityAccum / intensityCount;
         if (avgIntensity > 1.0) { avgIntensity = 1.0; }
         outColor = texture1D(transferFunction, avgIntensity);
