@@ -176,6 +176,8 @@ void GLWidget::precomputeGradients3DTex()
 	gradients3DTex->setMinificationFilter(QOpenGLTexture::Linear); // trilinear interpolation
 	gradients3DTex->setMagnificationFilter(QOpenGLTexture::Linear);
 	gradients3DTex->bind();
+
+	// TODO TEXTURE FORMAT IS BROKEN
 	glf->glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB32F, volume->getWidth(), volume->getHeight(), volume->getDepth(), 0, GL_RGB32F, GL_FLOAT, &gradients[0]);
 
 }
@@ -185,7 +187,7 @@ void GLWidget::dataLoaded(Volume *volumeData)
 	volume = volumeData;
 
 	loadVolume3DTex();
-	precomputeGradients3DTex();
+	//precomputeGradients3DTex();
 
 }
 
@@ -234,8 +236,8 @@ void GLWidget::paintGL()
 	glBindTexture(GL_TEXTURE_2D, rayVolumeExitPosMapFramebuffer->texture());
 	raycastShader->setUniformValue("volume", 2);
 	volume3DTex->bind(2);
-	raycastShader->setUniformValue("gradients", 3);
-	gradients3DTex->bind(3);
+	//raycastShader->setUniformValue("gradients", 3);
+	//gradients3DTex->bind(3);
 
 	// draw volume cube front faces (back face culling enabled)
 	// raycastShader then uses interpolated front face (ray entry) positions with exit positions from first pass

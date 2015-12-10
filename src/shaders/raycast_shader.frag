@@ -10,7 +10,7 @@ out vec4 outColor;
 uniform sampler1D transferFunction; // maps sampled intensities to color
 uniform sampler2D exitPositions; // precalculated exit positions for an orthogonal ray from each fragment
 uniform sampler3D volume;
-uniform sampler3D gradients; // directions of greatest change at each voxel, used as normals for shading
+//uniform sampler3D gradients; // directions of greatest change at each voxel, used as normals for shading
 uniform int numSamples; // number of samples along each ray
 uniform float sampleRangeStart;
 uniform float sampleRangeEnd;
@@ -63,7 +63,7 @@ void main()
             intensity = texture3D(volume, currentVoxel).r;
 
             if (normal == vec3(0) && intensity > 0.3) {
-                normal = normalize(texture3D(gradients, currentVoxel).rgb);
+                //normal = normalize(texture3D(gradients, currentVoxel).rgb);
                 firstHitPos = currentVoxel;
             }
 
@@ -114,6 +114,11 @@ void main()
 
     // BLINN PHONG ILLUMINATION MODEL
     if (enableShading) {
+        vec3 gradient;
+        gradient.x = texture3D(volume, vec3(firstHitPos.x+sampleStepSize, firstHitPos.yz)).r - texture3D(volume, vec3(firstHitPos.x-sampleStepSize, firstHitPos.yz)).r;
+        gradient.y = texture3D(volume, vec3(firstHitPos.x, firstHitPos.y+sampleStepSize, firstHitPos.z)).r - texture3D(volume, vec3(firstHitPos.x, firstHitPos.y-sampleStepSize, firstHitPos.z)).r;
+        gradient.z = texture3D(volume, vec3(firstHitPos.xy, firstHitPos.z+sampleStepSize)).r - texture3D(volume, vec3(firstHitPos.xy, firstHitPos.z-sampleStepSize)).r;
+        normal = normalize(gradient);
         vec3  surfaceColor = outColor.rgb;
         float surfaceAlpha = outColor.a;
         vec3  lightDir = normalize(lightPos - firstHitPos);
@@ -124,7 +129,7 @@ void main()
         vec3 halfVec = normalize(lightDir + view); // half vector of light and view vectors
         vec3 specular = pow(max(dot(halfVec, normal), 0.0f), shininess) * lightSpec * lightSpec;
 
-        outColor = vec4(normal, 1); //vec3(ambient + diffuse + specular), surfaceAlpha);
+        outColor = vec4(vec3(ambient + diffuse + specular), surfaceAlpha);
     }
 
     // DEBUG DRAW FRONT FACES (RAY ENTRY POSITIONS) / BACK FACES (RAY EXIT POSITIONS
