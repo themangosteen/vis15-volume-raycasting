@@ -127,7 +127,7 @@ private:
 
     QColor backgroundColor;
     int numSamples = 200;
-    int tmpNumSamples = 0;
+	int numSamplesInteractive = 0;
     float sampleRangeStart = 0.000f;
     float sampleRangeEnd = 1.000f;
     float shadingThreshold = 0.0;

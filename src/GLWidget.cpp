@@ -340,7 +340,7 @@ void GLWidget::setShading(bool shade)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    this->tmpNumSamples = this->numSamples > 5 ? this->numSamples : this->tmpNumSamples;
+	this->numSamplesInteractive = this->numSamples > 5 ? this->numSamples : this->numSamplesInteractive;
 	lastMousePos = event->pos();
 }
 
@@ -377,11 +377,20 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *)
 {
-    this->numSamples = this->tmpNumSamples;
+	this->numSamples = this->numSamplesInteractive;
     repaint();
 }
 
 GLWidget::~GLWidget()
 {
-	// TODO
+	delete logger; logger = nullptr;
+	delete glf; glf = nullptr;
+
+	delete raycastShader; raycastShader = nullptr;
+	delete rayVolumeExitPosMapShader; rayVolumeExitPosMapShader = nullptr;
+
+	delete transferFunction1DTex; transferFunction1DTex = nullptr;
+	delete rayVolumeExitPosMapFramebuffer; rayVolumeExitPosMapFramebuffer = nullptr;
+	delete volume3DTex; volume3DTex = nullptr;
+	delete gradients3DTex; gradients3DTex = nullptr;
 }
